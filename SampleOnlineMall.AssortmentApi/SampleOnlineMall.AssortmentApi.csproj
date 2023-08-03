@@ -16,11 +16,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\T109.ActiveDive.Models\SampleOnlineMall.Core.csproj" />
+    <Folder Include="Service\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Service\" />
+    <ProjectReference Include="..\SampleOnlineMall.Core\SampleOnlineMall.Core.csproj" />
   </ItemGroup>
 
 </Project>
