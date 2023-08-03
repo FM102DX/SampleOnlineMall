@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Develop\\SampleOnlineMall\\SampleOnlineMall\\SampleOnlineMall.AssortmentApi.csproj": {}
+    "C:\\Develop\\SampleOnlineMall\\SampleOnlineMall.AssortmentApi\\SampleOnlineMall.AssortmentApi.csproj": {}
   },
   "projects": {
-    "C:\\Develop\\SampleOnlineMall\\SampleOnlineMall\\SampleOnlineMall.AssortmentApi.csproj": {
+    "C:\\Develop\\SampleOnlineMall\\SampleOnlineMall.AssortmentApi\\SampleOnlineMall.AssortmentApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Develop\\SampleOnlineMall\\SampleOnlineMall\\SampleOnlineMall.AssortmentApi.csproj",
+        "projectUniqueName": "C:\\Develop\\SampleOnlineMall\\SampleOnlineMall.AssortmentApi\\SampleOnlineMall.AssortmentApi.csproj",
         "projectName": "SampleOnlineMall.AssortmentApi",
-        "projectPath": "C:\\Develop\\SampleOnlineMall\\SampleOnlineMall\\SampleOnlineMall.AssortmentApi.csproj",
+        "projectPath": "C:\\Develop\\SampleOnlineMall\\SampleOnlineMall.AssortmentApi\\SampleOnlineMall.AssortmentApi.csproj",
         "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "C:\\Develop\\SampleOnlineMall\\SampleOnlineMall\\obj\\",
+        "outputPath": "C:\\Develop\\SampleOnlineMall\\SampleOnlineMall.AssortmentApi\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

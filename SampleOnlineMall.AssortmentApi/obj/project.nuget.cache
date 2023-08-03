@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "9BxcAZZno7yfw6iH+fUG1WDvenviZ6yGllSF1UQFQ4UjQef6g42on/XWX9Yg8PCWzBo2VPiKcqxxfFUM/IvQkw==",
+  "dgSpecHash": "PH/Kiyw0IPognK1K2S8sxfcchd3FxAT8kmOKQ/EhEYVWcpKypezwtu05CX88urYGQcUrIi5XsXSqttl0WDOUGw==",
   "success": true,
-  "projectFilePath": "C:\\Develop\\SampleOnlineMall\\SampleOnlineMall\\SampleOnlineMall.AssortmentApi.csproj",
+  "projectFilePath": "C:\\Develop\\SampleOnlineMall\\SampleOnlineMall.AssortmentApi\\SampleOnlineMall.AssortmentApi.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Admin\\.nuget\\packages\\entityframework\\6.4.0\\entityframework.6.4.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\entityframework6.npgsql\\6.4.3\\entityframework6.npgsql.6.4.3.nupkg.sha512",
