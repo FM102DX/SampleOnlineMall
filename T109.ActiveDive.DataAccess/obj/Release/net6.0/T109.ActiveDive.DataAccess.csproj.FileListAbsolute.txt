@@ -1,0 +1,15 @@
+C:\Develop\T109ActivityFrontendFirstSampleVersion\Shop\T109.ActiveDive.DataAccess\bin\Release\net6.0\T109.ActiveDive.DataAccess.deps.json
+C:\Develop\T109ActivityFrontendFirstSampleVersion\Shop\T109.ActiveDive.DataAccess\bin\Release\net6.0\T109.ActiveDive.DataAccess.dll
+C:\Develop\T109ActivityFrontendFirstSampleVersion\Shop\T109.ActiveDive.DataAccess\bin\Release\net6.0\T109.ActiveDive.DataAccess.pdb
+C:\Develop\T109ActivityFrontendFirstSampleVersion\Shop\T109.ActiveDive.DataAccess\bin\Release\net6.0\T109.ActiveDive.Service.dll
+C:\Develop\T109ActivityFrontendFirstSampleVersion\Shop\T109.ActiveDive.DataAccess\bin\Release\net6.0\T109.ActiveDive.Service.pdb
+C:\Develop\T109ActivityFrontendFirstSampleVersion\Shop\T109.ActiveDive.DataAccess\obj\Release\net6.0\T109.ActiveDive.DataAccess.csproj.AssemblyReference.cache
+C:\Develop\T109ActivityFrontendFirstSampleVersion\Shop\T109.ActiveDive.DataAccess\obj\Release\net6.0\T109.ActiveDive.DataAccess.GeneratedMSBuildEditorConfig.editorconfig
+C:\Develop\T109ActivityFrontendFirstSampleVersion\Shop\T109.ActiveDive.DataAccess\obj\Release\net6.0\T109.ActiveDive.DataAccess.AssemblyInfoInputs.cache
+C:\Develop\T109ActivityFrontendFirstSampleVersion\Shop\T109.ActiveDive.DataAccess\obj\Release\net6.0\T109.ActiveDive.DataAccess.AssemblyInfo.cs
+C:\Develop\T109ActivityFrontendFirstSampleVersion\Shop\T109.ActiveDive.DataAccess\obj\Release\net6.0\T109.ActiveDive.DataAccess.csproj.CoreCompileInputs.cache
+C:\Develop\T109ActivityFrontendFirstSampleVersion\Shop\T109.ActiveDive.DataAccess\obj\Release\net6.0\T109.ActiveDive.DataAccess.csproj.CopyComplete
+C:\Develop\T109ActivityFrontendFirstSampleVersion\Shop\T109.ActiveDive.DataAccess\obj\Release\net6.0\T109.ActiveDive.DataAccess.dll
+C:\Develop\T109ActivityFrontendFirstSampleVersion\Shop\T109.ActiveDive.DataAccess\obj\Release\net6.0\refint\T109.ActiveDive.DataAccess.dll
+C:\Develop\T109ActivityFrontendFirstSampleVersion\Shop\T109.ActiveDive.DataAccess\obj\Release\net6.0\T109.ActiveDive.DataAccess.pdb
+C:\Develop\T109ActivityFrontendFirstSampleVersion\Shop\T109.ActiveDive.DataAccess\obj\Release\net6.0\ref\T109.ActiveDive.DataAccess.dll

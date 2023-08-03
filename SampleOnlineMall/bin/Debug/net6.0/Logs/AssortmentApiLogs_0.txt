@@ -1,0 +1,1 @@
+2023-07-30 19:25:14.649 +03:00 [INF] Got the commodity item name=string

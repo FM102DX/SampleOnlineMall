@@ -3,7 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32616.157
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleOnlineMall", "SampleOnlineMall\SampleOnlineMall.csproj", "{5E82B158-E433-4BDA-8871-08C82BED6E67}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleOnlineMall.AssortmentApi", "SampleOnlineMall\SampleOnlineMall.AssortmentApi.csproj", "{5E82B158-E433-4BDA-8871-08C82BED6E67}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleOnlineMall.Service", "T109.ActiveDive.Service\SampleOnlineMall.Service.csproj", "{0FBC8C87-A6AA-4BA0-B390-7CF10716EC3B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleOnlineMall.DataAccess", "T109.ActiveDive.DataAccess\SampleOnlineMall.DataAccess.csproj", "{2CF6F5A8-DD9B-437B-B54E-F804AB3498DB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleOnlineMall.Core", "T109.ActiveDive.Models\SampleOnlineMall.Core.csproj", "{2602A6F7-F991-4300-81E0-E826CC3A99B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +21,18 @@ Global
 		{5E82B158-E433-4BDA-8871-08C82BED6E67}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E82B158-E433-4BDA-8871-08C82BED6E67}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5E82B158-E433-4BDA-8871-08C82BED6E67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0FBC8C87-A6AA-4BA0-B390-7CF10716EC3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FBC8C87-A6AA-4BA0-B390-7CF10716EC3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0FBC8C87-A6AA-4BA0-B390-7CF10716EC3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FBC8C87-A6AA-4BA0-B390-7CF10716EC3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CF6F5A8-DD9B-437B-B54E-F804AB3498DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CF6F5A8-DD9B-437B-B54E-F804AB3498DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CF6F5A8-DD9B-437B-B54E-F804AB3498DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CF6F5A8-DD9B-437B-B54E-F804AB3498DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2602A6F7-F991-4300-81E0-E826CC3A99B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2602A6F7-F991-4300-81E0-E826CC3A99B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2602A6F7-F991-4300-81E0-E826CC3A99B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2602A6F7-F991-4300-81E0-E826CC3A99B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
