@@ -567,6 +567,71 @@ function GetAssortmentStatus ([string] $_transactionId)
 }
 
 
+function ViewPostgresDbsOnRemoteHost ([string] $_transactionId)
+{
+    LogAndOutput -text  "Creating session";
+    
+    # session
+    try 
+    {
+        $deploySession = New-PSSession -HostName $script:deployAddress01 -KeyFilePath "C:\Users\Admin\.ssh\id_rsa";       
+    }
+    catch 
+    {
+            log "Unable to crate session: $($_)"
+            exit
+    }
+    
+    
+    LogAndOutput -text "Session opened successfully";
+
+    Invoke-Command -Session $deploySession -ScriptBlock { Invoke-Expression "sudo -u postgres psql -l"; }
+
+}
+
+function CreateAssortDbOnRemoteHost ([string] $_transactionId)
+{
+    LogAndOutput -text  "Creating session";
+    
+    # session
+    try 
+    {
+        $deploySession = New-PSSession -HostName $script:deployAddress01 -KeyFilePath "C:\Users\Admin\.ssh\id_rsa";       
+    }
+    catch 
+    {
+            log "Unable to crate session: $($_)"
+            exit
+    }
+    
+    
+    LogAndOutput -text "Session opened successfully";
+
+    Invoke-Command -Session $deploySession -ScriptBlock { Invoke-Expression "sudo -u postgres psql -c 'CREATE DATABASE Assortment'"; }
+
+}
+
+function DeleteAssortDbOnRemoteHost ([string] $_transactionId)
+{
+    LogAndOutput -text  "Creating session";
+    
+    # session
+    try 
+    {
+        $deploySession = New-PSSession -HostName $script:deployAddress01 -KeyFilePath "C:\Users\Admin\.ssh\id_rsa";       
+    }
+    catch 
+    {
+            log "Unable to crate session: $($_)"
+            exit
+    }
+    
+    
+    LogAndOutput -text "Session opened successfully";
+
+    Invoke-Command -Session $deploySession -ScriptBlock { Invoke-Expression "sudo -u postgres psql -c 'DROP DATABASE Assortment'"; }
+
+}
 
 
 
@@ -589,6 +654,12 @@ function ExecMenuItem([string] $menuItem) {
     elseif ($ex -eq "200101") { DeploySampleMallAssortWebApi -_transactionId $ex}
     elseif ($ex -eq "200102") { FeedAssortmentToMallAssortWebApi -_transactionId $ex}
     elseif ($ex -eq "203101") { DeleteAllAssortmentItems -_transactionId $ex}
+
+    elseif ($ex -eq "250000") { ViewPostgresDbsOnRemoteHost -_transactionId $ex}
+    elseif ($ex -eq "250101") { CreateAssortDbOnRemoteHost -_transactionId $ex}
+    elseif ($ex -eq "253101") { DeleteAssortDbOnRemoteHost -_transactionId $ex}
+
+
 
     elseif ($ex -eq "99") { $script:canExit = $true }
     else {
