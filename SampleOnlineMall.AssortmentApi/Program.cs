@@ -1,10 +1,13 @@
 using SampleOnlineMall.Core;
 using SampleOnlineMall.Core.Appilcation;
 using SampleOnlineMall.Core.Managers;
+using SampleOnlineMall.Core.Mappers;
+using SampleOnlineMall.DataAccess;
 using SampleOnlineMall.DataAccess.Abstract;
 using SampleOnlineMall.DataAccess.DataAccess;
 using SampleOnlineMall.Service;
 using Serilog;
+
 
 namespace SampleOnlineMall
 {
@@ -28,12 +31,28 @@ namespace SampleOnlineMall
 
 
             _logger.Information("P1");
+            // db init
+            var context = new EfPostgresDbContext();
+            try
+            {
+                context.Database.EnsureCreated();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Error while creating database: {ex.Message}");
+                throw ex;
+            }
+            _logger.Information("Database is created");
+
+            var repo = new EfAsyncRepository<CommodityItem>(context, _logger);
+            
 
             // Add services to the container
             builder.Services.AddSingleton(typeof(SampleOnlineMallAssortmentApiApp), (x) => _app);
             builder.Services.AddScoped(typeof(CommodityItemManager));
             builder.Services.AddSingleton(typeof(Serilog.ILogger), (x) => _logger);
-            builder.Services.AddSingleton(typeof(IAsyncRepository<CommodityItem>), typeof(InMemoryAsyncRepository<CommodityItem>));
+            builder.Services.AddSingleton(typeof(IAsyncRepository<CommodityItem>), (x)=> repo);
+            builder.Services.AddTransient<Mapper>();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -62,7 +81,7 @@ namespace SampleOnlineMall
                 app.UseAuthorization();
 
                 app.MapControllers();
-                _logger.Information("P33");
+                _logger.Information("P31");
                 app.Run();
             }
             catch (Exception ex)

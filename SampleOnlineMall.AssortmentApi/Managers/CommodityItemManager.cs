@@ -10,6 +10,7 @@ using System.Drawing;
 using System.IO;
 using Shim= SixLabors.ImageSharp.Image;
 using SixLabors.ImageSharp.Formats;
+using SampleOnlineMall.Core.Mappers;
 
 namespace SampleOnlineMall.Core.Managers
 {
@@ -18,11 +19,13 @@ namespace SampleOnlineMall.Core.Managers
         private IAsyncRepository<CommodityItem> _repo;
         private Serilog.ILogger _logger;
         private SampleOnlineMallAssortmentApiApp _app;
-        public CommodityItemManager(IAsyncRepository<CommodityItem> repo, Serilog.ILogger logger, SampleOnlineMallAssortmentApiApp app)
+        private Mapper _mapper;
+        public CommodityItemManager(IAsyncRepository<CommodityItem> repo, Serilog.ILogger logger, SampleOnlineMallAssortmentApiApp app, Mapper mapper)
         {
             _repo = repo;
             _logger = logger;
             _app = app;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<CommodityItem>> GetAll()
@@ -76,12 +79,20 @@ namespace SampleOnlineMall.Core.Managers
             }
         }
 
-            public async Task<CommonOperationResult> InsertFromWebApi (CommodityItem item)
+        public async Task<CommonOperationResult> InsertFromWebApi (CommodityItemApiFeed item)
         {
             _logger.Information($"This is ItemManager. Received commodity item name={item.Name}");
 
             try
             {
+
+                //saving object
+                var convertedItem = _mapper.CommodityItemFromCommodityItemApiFeed(item);
+                var saveRez = await _repo.AddAsync(convertedItem);
+
+                if(!saveRez.Success) return CommonOperationResult.SayFail(saveRez.Message);
+
+
                 // saving pictures
                 byte[] imageByteArr;
                 var picDirectory = _app.GetCommodityItemImageDirectoryFromGuid(item.Id);
@@ -116,7 +127,6 @@ namespace SampleOnlineMall.Core.Managers
                 item.FirstPic = null;
                 item.SecondPic = null;
                 item.ThirdPic = null;
-                await _repo.AddAsync(item);
 
                 ResizeImageToWidthAndSave(firstPicPath, firstPicPathM, 700);
                 ResizeImageToWidthAndSave(secondPicPath, secondPicPathM, 700);
@@ -125,6 +135,10 @@ namespace SampleOnlineMall.Core.Managers
                 ResizeImageToWidthAndSave(firstPicPath, firstPicPathS, 300);
                 ResizeImageToWidthAndSave(secondPicPath, secondPicPathS, 300);
                 ResizeImageToWidthAndSave(thirdPicPath, thirdPicPathS, 300);
+
+
+
+
                 return CommonOperationResult.SayOk();
 
             }

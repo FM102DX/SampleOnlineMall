@@ -14,10 +14,14 @@ namespace SampleOnlineMall.DataAccess
     {
         
         private DbContext _context;
+        Serilog.ILogger _logger;
 
-        public EfAsyncRepository(DbContext context)
+        public EfAsyncRepository(DbContext context, Serilog.ILogger logger)
         {
             _context = context;
+            _logger = logger;
+
+
         }
 
         public Task<IEnumerable<T>> GetAllAsync()
@@ -48,12 +52,15 @@ namespace SampleOnlineMall.DataAccess
         {
             try
             {
+                _logger.Information($"This is repository. Gonna insert object {t}");
                 _context.Set<T>().Add(t);
                 _context.SaveChanges();
+                _logger.Debug($"Successful");
                 return Task.FromResult(CommonOperationResult.SayOk());
             }
             catch (Exception ex)
             {
+                _logger.Debug($"Error while inserting {ex}");
                 return Task.FromResult(CommonOperationResult.SayFail(ex.Message));
             }
         }

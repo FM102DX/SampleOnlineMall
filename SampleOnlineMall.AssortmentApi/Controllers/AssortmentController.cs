@@ -37,10 +37,9 @@ namespace SampleOnlineMall
             }
         }
 
-
         [HttpPost]
         [Route("insertcommodityitem/")]
-        public async Task<IActionResult> InsertCommodityItem([FromBody] CommodityItem commodityItem)
+        public async Task<IActionResult> InsertCommodityItem([FromBody] CommodityItemApiFeed commodityItem)
         {
             var rezult = await _commodityItemManager.InsertFromWebApi(commodityItem);
             if (rezult.Success)

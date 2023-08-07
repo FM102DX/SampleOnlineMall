@@ -313,8 +313,22 @@ function DeployAspNetCore60ApiSiteToUbuntuHost ([string] $remoteFolder, [string]
     LogAndOutput -text  "Finished data copy";
 
     # give rights to folder
+    # $logsDir=[io.path]::Combine($remoteFolder,"Logs");
+    $logsDir="$($remoteFolder)/Logs";
+    
+
+    #logs folder
+
+    Invoke-Command -Session $deploySession -ScriptBlock    {  Invoke-Expression "Remove-Item -Path $($args[0]) -Force -Recurse";} -ArgumentList $logsDir
+
+    Invoke-Command -Session $deploySession -ScriptBlock    {  Invoke-Expression "mkdir $($args[0])";} -ArgumentList $logsDir
+    pause
     Invoke-Command -Session $deploySession -ScriptBlock    {  Invoke-Expression "chmod 777 $($args[0])";} -ArgumentList $remoteFolder
+    pause
+    Invoke-Command -Session $deploySession -ScriptBlock    {  Invoke-Expression "chmod 777 $($args[0])";} -ArgumentList $logsDir
+    pause
     LogAndOutput -text  "Given rights to $remoteFolder on remote host";
+    pause
 
     # give execution rights to dll
     Invoke-Command -Session $deploySession -ScriptBlock  {  Invoke-Expression "chmod +X $($args[0])";} -ArgumentList $executingFileFullPath
@@ -450,8 +464,8 @@ function DeploySampleMallAssortWebApi([string] $_transactionId)
     }
     
     [string] $remoteFolder = "/var/www/www-root/data/www/mallassortapi01.t109.tech";
-    [string] $projectPath = "C:\Develop\SampleOnlineMall\SampleOnlineMall";
-    [string] $projectBuildPath = "C:\Develop\SampleOnlineMall\SampleOnlineMall\bin\Release\net6.0\*";
+    [string] $projectPath = "C:\Develop\SampleOnlineMall\SampleOnlineMall.AssortmentApi";
+    [string] $projectBuildPath = "C:\Develop\SampleOnlineMall\SampleOnlineMall.AssortmentApi\bin\Release\net6.0\*";
     [string] $wwwRootFolder = "";
     [string] $executingFileFullPath = "/var/www/www-root/data/www/mallassortapi01.t109.tech/SampleOnlineMall.AssortmentApi.dll";
     [string] $serviceName = "mallassortapi01.service";
@@ -490,7 +504,7 @@ function FeedAssortmentToMallAssortWebApi([string] $_transactionId)
     [string] $controllerUrl02 = "https://mallassortapi01.t109.tech/api/assortment/insertcommodityitem";
     [string] $imagePath = "C:\Develop\SampleOnlineMallAssortment";
 
-    [string] $dllFullPath ="C:\Develop\SampleOnlineMall\T109.ActiveDive.Models\bin\Release\net6.0\SampleOnlineMall.Core.dll"
+    [string] $dllFullPath ="C:\Develop\SampleOnlineMall\SampleOnlineMall.AssortmentApi\bin\Release\net6.0\SampleOnlineMall.Core.dll"
 
     # Add-Type $source
 
@@ -506,7 +520,7 @@ function FeedAssortmentToMallAssortWebApi([string] $_transactionId)
 
         $itemJsonContent= [System.IO.File]::ReadAllText($itemJsonFileName);
         
-        $commItem = [SampleOnlineMall.Core.commodityItem] (ConvertFrom-Json($itemJsonContent));
+        $commItem = [SampleOnlineMall.Core.CommodityItemApiFeed] (ConvertFrom-Json($itemJsonContent));
 
         Log "-----------"
         Log $commItem.Id
@@ -634,6 +648,46 @@ function DeleteAssortDbOnRemoteHost ([string] $_transactionId)
 }
 
 
+function FillClientsDb()
+{
+
+    LogAndOutput -text  "Creating session";
+    
+    # session
+    try 
+    {
+        $deploySession = New-PSSession -HostName $script:deployAddress01 -KeyFilePath "C:\Users\Admin\.ssh\id_rsa";       
+    }
+    catch 
+    {
+            log "Unable to crate session: $($_)"
+            exit
+    }
+
+    [string] $createTableQuery = "CREATE TABLE clients 
+                                    (
+                                        id UUID PRIMARY KEY UNIQUE NOT NULL, 
+                                        username VARCHAR ( 50 ) UNIQUE NOT NULL,
+                                        name VARCHAR ( 100 ) NULL,
+                                        surname VARCHAR ( 100 ) NULL,
+                                        age INT, 
+                                        email VARCHAR ( 255 ) UNIQUE NOT NULL,
+                                        created_on TIMESTAMP NOT NULL
+                                    )";
+
+    [string] $insertClient1Query = "INSERT INTO clients (id, username, name, surname, email) values ($(New-Guid), 'Clinent1', 'Name1', 'Surname1', 30, 'email.dot.com')"
+
+    LogAndOutput -text "Session opened successfully";
+    Invoke-Command -Session $deploySession -ScriptBlock { Invoke-Expression "sudo -u postgres psql -c 'DROP DATABASE Crm'"; }
+    pause
+    Invoke-Command -Session $deploySession -ScriptBlock { Invoke-Expression "sudo -u postgres psql -c 'CREATE DATABASE Crm'"; }
+    pause
+    Invoke-Command -Session $deploySession -ScriptBlock { Invoke-Expression "sudo -u postgres psql -c '$createTableQuery'"; }
+    pause
+    Invoke-Command -Session $deploySession -ScriptBlock { Invoke-Expression "sudo -u postgres psql -c '$insertClient1Query'"; }
+    pause
+}
+
 
 #MENU
 function ExecMenuItem([string] $menuItem) {
@@ -659,7 +713,7 @@ function ExecMenuItem([string] $menuItem) {
     elseif ($ex -eq "250101") { CreateAssortDbOnRemoteHost -_transactionId $ex}
     elseif ($ex -eq "253101") { DeleteAssortDbOnRemoteHost -_transactionId $ex}
 
-
+    elseif ($ex -eq "300101") { FillClientsDb -_transactionId $ex}
 
     elseif ($ex -eq "99") { $script:canExit = $true }
     else {
