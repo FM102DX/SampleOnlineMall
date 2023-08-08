@@ -20,8 +20,6 @@ namespace SampleOnlineMall.DataAccess
         {
             _context = context;
             _logger = logger;
-
-
         }
 
         public Task<IEnumerable<T>> GetAllAsync()
@@ -55,13 +53,14 @@ namespace SampleOnlineMall.DataAccess
                 _logger.Information($"This is repository. Gonna insert object {t}");
                 _context.Set<T>().Add(t);
                 _context.SaveChanges();
-                _logger.Debug($"Successful");
+                _logger.Information($"Successful");
                 return Task.FromResult(CommonOperationResult.SayOk());
             }
             catch (Exception ex)
             {
-                _logger.Debug($"Error while inserting {ex}");
-                return Task.FromResult(CommonOperationResult.SayFail(ex.Message));
+                var errMsg = $"Error while inserting {ex}, innerexception is {ex.InnerException}";
+                _logger.Debug(errMsg);
+                return Task.FromResult(CommonOperationResult.SayFail(errMsg));
             }
         }
 

@@ -92,7 +92,6 @@ namespace SampleOnlineMall.Core.Managers
 
                 if(!saveRez.Success) return CommonOperationResult.SayFail(saveRez.Message);
 
-
                 // saving pictures
                 byte[] imageByteArr;
                 var picDirectory = _app.GetCommodityItemImageDirectoryFromGuid(item.Id);
@@ -145,7 +144,7 @@ namespace SampleOnlineMall.Core.Managers
             catch (Exception ex)
             {
                 _logger.Error($"{ex.Message}");
-                return CommonOperationResult.SayFail($"{ex.Message}");
+                return CommonOperationResult.SayFail($"Ex={ex.Message} InnerEx={ex.InnerException}");
 
             }
         }

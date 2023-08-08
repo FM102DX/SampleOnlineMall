@@ -322,13 +322,13 @@ function DeployAspNetCore60ApiSiteToUbuntuHost ([string] $remoteFolder, [string]
     Invoke-Command -Session $deploySession -ScriptBlock    {  Invoke-Expression "Remove-Item -Path $($args[0]) -Force -Recurse";} -ArgumentList $logsDir
 
     Invoke-Command -Session $deploySession -ScriptBlock    {  Invoke-Expression "mkdir $($args[0])";} -ArgumentList $logsDir
-    pause
+
     Invoke-Command -Session $deploySession -ScriptBlock    {  Invoke-Expression "chmod 777 $($args[0])";} -ArgumentList $remoteFolder
-    pause
+
     Invoke-Command -Session $deploySession -ScriptBlock    {  Invoke-Expression "chmod 777 $($args[0])";} -ArgumentList $logsDir
-    pause
+
     LogAndOutput -text  "Given rights to $remoteFolder on remote host";
-    pause
+
 
     # give execution rights to dll
     Invoke-Command -Session $deploySession -ScriptBlock  {  Invoke-Expression "chmod +X $($args[0])";} -ArgumentList $executingFileFullPath
@@ -550,10 +550,10 @@ function FeedAssortmentToMallAssortWebApi([string] $_transactionId)
             $commItem.ThirdPic = [Convert]::ToBase64String($bytesArr);
         }
 
-        $jsonObj = ConvertTo-Json -InputObject $commItem -Depth 100
+        $jsonObj = ConvertTo-Json -InputObject $commItem -Depth 100 
         Log "Sending json obj"
         Log $jsonObj
-        Invoke-RestMethod -Method 'Post' -Uri $controllerUrl02 -ContentType "application/json" -Body $jsonObj
+        Invoke-RestMethod -Method 'Post' -Uri $controllerUrl02 -ContentType "application/json; charset=utf-8" -Body $jsonObj   
 
     }
     pause

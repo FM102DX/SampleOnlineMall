@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using SampleOnlineMall.Core;
 using SampleOnlineMall.Core.Appilcation;
 using SampleOnlineMall.Core.Managers;
@@ -16,7 +17,11 @@ namespace SampleOnlineMall
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            
             builder.WebHost.ConfigureKestrel(options => options.ListenLocalhost(6000));
+
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
             var configuration = new ConfigurationBuilder().Build();
 
             builder.Configuration.AddConfiguration(configuration);
@@ -27,32 +32,26 @@ namespace SampleOnlineMall
 
             Serilog.ILogger _logger = new LoggerConfiguration()
                   .WriteTo.File(logFilePath)
+                  .MinimumLevel.Debug()
                   .CreateLogger();
-
-
-            _logger.Information("P1");
-            // db init
-            var context = new EfPostgresDbContext();
-            try
-            {
-                context.Database.EnsureCreated();
-            }
-            catch (Exception ex)
-            {
-                _logger.Error($"Error while creating database: {ex.Message}");
-                throw ex;
-            }
-            _logger.Information("Database is created");
-
-            var repo = new EfAsyncRepository<CommodityItem>(context, _logger);
             
+            _logger.Information("P1");
+            
+            //var confMgr = new ConfigurationManager();
+
+            //confMgr.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+            
+            builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+            var cnnStr = builder.Configuration.GetConnectionString("PostgreConnection");
 
             // Add services to the container
+            builder.Services.AddSingleton(typeof(Microsoft.Extensions.Configuration.ConfigurationManager), (x) => builder.Configuration);
+            builder.Services.AddScoped(typeof(DbContext), typeof(EfPostgresDbContext));
             builder.Services.AddSingleton(typeof(SampleOnlineMallAssortmentApiApp), (x) => _app);
             builder.Services.AddScoped(typeof(CommodityItemManager));
             builder.Services.AddSingleton(typeof(Serilog.ILogger), (x) => _logger);
-            builder.Services.AddSingleton(typeof(IAsyncRepository<CommodityItem>), (x)=> repo);
-            builder.Services.AddTransient<Mapper>();
+            builder.Services.AddScoped(typeof(IAsyncRepository<CommodityItem>), typeof(EfAsyncRepository<CommodityItem>));
+            builder.Services.AddScoped<Mapper>();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -88,8 +87,6 @@ namespace SampleOnlineMall
             {
                 _logger.Information($"Error: {ex.Message}");
             }
-
-
             _logger.Information("P4");
         }
     }

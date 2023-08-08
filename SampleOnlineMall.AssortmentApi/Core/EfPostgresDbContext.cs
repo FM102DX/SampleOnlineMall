@@ -12,25 +12,26 @@ namespace SampleOnlineMall.Core
 
     public class EfPostgresDbContext : DbContext
     {
-        public string DbPath { get; private set; }
+        private Microsoft.Extensions.Configuration.ConfigurationManager _confManager;
 
-        public string Guid { get; private set; }
-
-        public EfPostgresDbContext()
+        public EfPostgresDbContext(Microsoft.Extensions.Configuration.ConfigurationManager confManager)
         {
-           
+            _confManager = confManager;
+            Database.EnsureCreated();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseNpgsql("Host=31.31.201.152:5432; Database=postgres; Username=postgres; password=123");
+                // optionsBuilder.UseNpgsql("Host=31.31.201.152:5432; Database=assortment; Username=postgres; password=123");
+                optionsBuilder.UseNpgsql(_confManager.GetConnectionString("PostgreConnection"));
             }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
             modelBuilder.Entity<CommodityItem>(entity =>
             {
                 entity.HasKey(e => e.Id);
