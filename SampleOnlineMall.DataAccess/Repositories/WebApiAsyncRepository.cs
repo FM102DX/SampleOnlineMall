@@ -12,6 +12,7 @@ using Newtonsoft.Json.Serialization;
 using SampleOnlineMall.DataAccess.Abstract;
 using SampleOnlineMall.DataAccess.Models;
 using SampleOnlineMall.Service;
+using System.Linq.Expressions;
 
 namespace SampleOnlineMall.DataAccess.DataAccess
 {
@@ -22,64 +23,18 @@ namespace SampleOnlineMall.DataAccess.DataAccess
         private static readonly object _locker = new object();
 
         private HttpClient httpClient;
+        private Serilog.ILogger _logger
+        {
+            get { return _options.Logger; }
+        }
+        private WebApiAsyncRepositoryOptions _options;
 
-        private string countHostPath;
-        private string getAllHostPath;
-        private string insertHostPath;
-        private string updateHostPath;
-        private string deleteHostPath;
-        private string searchHostPath;
-        private string getByIdOrNullHostPath;
-
-        public Serilog.ILogger Logger;
-
-        public WebApiAsyncRepository<T> SetCountHostPath(string text)
+        public WebApiAsyncRepository(WebApiAsyncRepositoryOptions options)
         {
-            countHostPath = text;
-            return this;
-        }
-        public WebApiAsyncRepository<T> SetGetAllHostPath(string text)
-        {
-            getAllHostPath = text;
-            return this;
-        }
-        public WebApiAsyncRepository<T> SetInsertHostPath(string text)
-        {
-            insertHostPath = text;
-            return this;
-        }
-        public WebApiAsyncRepository<T> SetUpdateHostPath(string text)
-        {
-            updateHostPath = text;
-            return this;
-        }
-        public WebApiAsyncRepository<T> SetDeleteHostPath(string text)
-        {
-            deleteHostPath = text;
-            return this;
-        }
-
-        public WebApiAsyncRepository<T> SetSearchHostPath(string text)
-        {
-            searchHostPath = text;
-            return this;
-        }
-        public WebApiAsyncRepository<T> SetGetByIdOrNullHostPath(string text)
-        {
-            getByIdOrNullHostPath = text;
-            return this;
-        }
-        public WebApiAsyncRepository<T> SetBaseAddress(string baseAddress)
-        {
-            httpClient.BaseAddress = new Uri(baseAddress);
-            return this;
-        }
-
-        public WebApiAsyncRepository(Serilog.ILogger logger)
-        {
+            _options = options;
             httpClient = new System.Net.Http.HttpClient(new HttpClientHandler());
+            httpClient.BaseAddress = new Uri(_options.BaseAddress);
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            Logger = logger;
         }
 
         public async Task<int> GetCountAsync()
@@ -87,7 +42,7 @@ namespace SampleOnlineMall.DataAccess.DataAccess
             int rez = -1;
             try
             {
-                var response = await httpClient.GetAsync($"{countHostPath}");
+                var response = await httpClient.GetAsync($"{_options.CountHostPath}");
                 var json = response.Content.ReadAsStringAsync().Result;
                 switch (response.StatusCode)
                 {
@@ -101,7 +56,7 @@ namespace SampleOnlineMall.DataAccess.DataAccess
             }
             catch (Exception ex)
             {
-                Logger.Error(ex.Message);
+                _logger.Error(ex.Message);
             }
             return rez;
         }
@@ -111,15 +66,15 @@ namespace SampleOnlineMall.DataAccess.DataAccess
             IEnumerable<T> items =  new List<T>();
             try
             {
-                Logger.Information($"This is WebApiAsyncRepository.search searchText={searchText}");
+                _logger.Information($"This is WebApiAsyncRepository.search searchText={searchText}");
                 
-                Logger.Information($"Sending reqyest to {httpClient.BaseAddress}");
+                _logger.Information($"Sending reqyest to {httpClient.BaseAddress}");
 
-                var response = await httpClient.GetAsync($"{searchHostPath}/{searchText}");
+                var response = await httpClient.GetAsync($"{_options.SearchHostPath}/{searchText}");
                 
                 var json = await response.Content.ReadAsStringAsync();
 
-                Logger.Information($"Received json {json}");
+                _logger.Information($"Received json {json}");
 
                 switch (response.StatusCode)
                 {
@@ -132,7 +87,7 @@ namespace SampleOnlineMall.DataAccess.DataAccess
             }
             catch (Exception ex)
             {
-                Logger.Error($"ERROR: in WebApiAsyncRepository.search {ex.Message}");
+                _logger.Error($"ERROR: in WebApiAsyncRepository.search {ex.Message}");
             }
             return items;
         }
@@ -143,7 +98,7 @@ namespace SampleOnlineMall.DataAccess.DataAccess
             IEnumerable<T> items = new List<T>();
             try
             {
-                var response = await httpClient.GetAsync($"{getAllHostPath}");
+                var response = await httpClient.GetAsync($"{_options.GetAllHostPath}");
                 var json = await response.Content.ReadAsStringAsync();
                 switch (response.StatusCode)
                 {
@@ -156,7 +111,7 @@ namespace SampleOnlineMall.DataAccess.DataAccess
             }
             catch (Exception ex)
             {
-                Logger.Error(ex.Message);
+                _logger.Error(ex.Message);
             }
             return items;
         }
@@ -165,7 +120,7 @@ namespace SampleOnlineMall.DataAccess.DataAccess
             T item = null;
             try
             {
-                var response = await httpClient.GetAsync($"{getByIdOrNullHostPath}{id}");
+                var response = await httpClient.GetAsync($"{_options.GetByIdOrNullHostPath}{id}");
                 var json = await response.Content.ReadAsStringAsync();
                 switch (response.StatusCode)
                 {
@@ -178,7 +133,7 @@ namespace SampleOnlineMall.DataAccess.DataAccess
             }
             catch (Exception ex)
             {
-                Logger.Error(ex.Message);
+                _logger.Error(ex.Message);
             }
             return item;
         }
@@ -202,7 +157,7 @@ namespace SampleOnlineMall.DataAccess.DataAccess
 
                 jsonContent = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response = await httpClient.PostAsync($"{insertHostPath}", jsonContent);
+                var response = await httpClient.PostAsync($"{_options.InsertHostPath}", jsonContent);
 
                 switch (response.StatusCode)
                 {
@@ -237,7 +192,7 @@ namespace SampleOnlineMall.DataAccess.DataAccess
 
                 jsonContent = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response = await httpClient.PutAsync($"{updateHostPath}", jsonContent);
+                var response = await httpClient.PutAsync($"{_options.UpdateHostPath}", jsonContent);
 
                 switch (response.StatusCode)
                 {
@@ -262,7 +217,7 @@ namespace SampleOnlineMall.DataAccess.DataAccess
             CommonOperationResult rez;
             try
             {
-                var response = await httpClient.DeleteAsync($"{deleteHostPath}/{id}");
+                var response = await httpClient.DeleteAsync($"{_options.DeleteHostPath}/{id}");
 
                 switch (response.StatusCode)
                 {
@@ -284,6 +239,11 @@ namespace SampleOnlineMall.DataAccess.DataAccess
         public async Task<CommonOperationResult> InitAsync(bool deleteDb)
         {
             return await Task.FromResult(CommonOperationResult.SayOk());
+        }
+
+        public Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> filter)
+        {
+            throw new NotImplementedException();
         }
     }
 }

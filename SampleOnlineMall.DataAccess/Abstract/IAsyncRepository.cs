@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using SampleOnlineMall.Service;
@@ -9,6 +10,7 @@ namespace SampleOnlineMall.DataAccess.Abstract
     public interface IAsyncRepository<T> where T : IBaseEntity
     {
         public Task<IEnumerable<T>> GetAllAsync();
+        public Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> filter);
 
         public Task<T> GetByIdOrNullAsync(Guid id);
 

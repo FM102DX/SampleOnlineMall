@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using SampleOnlineMall.DataAccess.Abstract;
 using SampleOnlineMall.DataAccess.Models;
@@ -17,10 +18,13 @@ namespace SampleOnlineMall.DataAccess.DataAccess
         {
 
         }
-
         public Task<IEnumerable<T>> GetAllAsync()
         {
             return Task.FromResult((IEnumerable<T>)Data);
+        }
+        public Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> filter)
+        {
+            return Task.FromResult((IEnumerable<T>)Data.Where(filter.Compile()));
         }
 
         public Task<T> GetByIdOrNullAsync(Guid id)
@@ -80,5 +84,6 @@ namespace SampleOnlineMall.DataAccess.DataAccess
         {
             return Task.FromResult(Data.Count);
         }
+
     }
 }

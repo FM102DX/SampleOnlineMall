@@ -15,15 +15,17 @@ namespace SampleOnlineMall
     {
         public Serilog.ILogger _logger { get; set; }
         public CommodityItemManager _commodityItemManager { get; set; }
+        public WebLoggerManager _webLoggerManager { get; set; }
 
-        public AssortmentController(CommodityItemManager commodityItemManager, Serilog.ILogger logger)
+        public AssortmentController(CommodityItemManager commodityItemManager, WebLoggerManager webLoggerManager, Serilog.ILogger logger)
         {
             _logger = logger;
             _commodityItemManager= commodityItemManager;
+            _webLoggerManager= webLoggerManager;
         }
 
         [HttpDelete]
-        [Route("deleteallcommodityitems/")]
+        [Route("deleteallitems/")]
         public async Task<IActionResult> DeleteAllCommodityItems()
         {
             var rezult = await _commodityItemManager.DeleteAll();
@@ -38,16 +40,18 @@ namespace SampleOnlineMall
         }
 
         [HttpPost]
-        [Route("insertcommodityitem/")]
+        [Route("insertitem/")]
         public async Task<IActionResult> InsertCommodityItem([FromBody] CommodityItemApiFeed commodityItem)
         {
             var rezult = await _commodityItemManager.InsertFromWebApi(commodityItem);
             if (rezult.Success)
             {
+                _webLoggerManager.Log($"Successfully added assortment item name={commodityItem.Name}");
                 return StatusCode(201, CommonOperationResult.SayOk());
             }
             else
             {
+                _webLoggerManager.Log($"Error while adding assort position name={commodityItem.Name}");
                 return StatusCode(501, CommonOperationResult.SayFail(rezult.Message));
             }
 

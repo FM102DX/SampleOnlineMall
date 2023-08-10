@@ -7,6 +7,7 @@ using System.Linq;
 using SampleOnlineMall.DataAccess.Abstract;
 using SampleOnlineMall.DataAccess.Models;
 using SampleOnlineMall.Service;
+using System.Linq.Expressions;
 
 namespace SampleOnlineMall.DataAccess
 {
@@ -26,12 +27,29 @@ namespace SampleOnlineMall.DataAccess
         {
             try
             {
-                var rez = Task.FromResult((IEnumerable<T>)_context.Set<T>());
+                var rez = Task.FromResult((IEnumerable<T>)_context.Set<T>().AsNoTracking());
                 return rez;
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                List<T> lst = new List<T>();
+                IEnumerable<T> en = (IEnumerable<T>)lst;
+                return Task.FromResult(en);
+            }
+        }
+
+        public Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> filter)
+        {
+            try
+            {
+                var rez = Task.FromResult((IEnumerable<T>)_context.Set<T>().Where(filter).AsNoTracking());
+                return rez;
+            }
+            catch (Exception ex)
+            {
+                List<T> lst = new List<T>();
+                IEnumerable<T> en = (IEnumerable<T>)lst;
+                return Task.FromResult(en);
             }
         }
 

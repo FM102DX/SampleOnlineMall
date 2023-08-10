@@ -30,6 +30,7 @@ $deployCreds1 = New-Object System.Management.Automation.PSCredential ($userName1
 [string] $scriptFileFullPath = [IO.Path]::Combine($scriptDir,$scriptFile);
 [string] $pwshPath = "C:\Program Files\PowerShell\7\pwsh.exe";
 [string] $operaExeFullPath = "C:\Users\Admin\AppData\Local\Programs\Opera\opera.exe"
+[string] $dllFullPath ="C:\Develop\SampleOnlineMall\SampleOnlineMall.AssortmentApi\bin\Release\net6.0\SampleOnlineMall.Core.dll"
 
 #COMMON -- MENUMAKER
 [string] $menuFileName='MenuDetail.txt';
@@ -235,6 +236,27 @@ function DeployApi01 ([string] $_transactionId)
 
 }
 
+Function DeployWebLogger ([string] $_transactionId)
+{
+    if($callType -eq 'plain')
+    {
+        # this is made to start transaction in a separate window
+        [string] $argList = "-file $scriptFileFullPath -transactionId $_transactionId -callType 'external-from-self' ";
+        Start-process -FilePath $pwshPath -ArgumentList $argList -PassThru;
+        return;
+    }
+    
+    [string] $remoteFolder = "/var/www/www-root/data/www/weblogger.t109.tech";
+    [string] $projectPath = "C:\Develop\SampleOnlineMall\SampleOnlineMall.WebLogger";
+    [string] $projectBuildPath = "C:\Develop\SampleOnlineMall\SampleOnlineMall.WebLogger\bin\Release\net6.0\*";
+    [string] $wwwRootFolder =    "C:\Develop\SampleOnlineMall\SampleOnlineMall.WebLogger\wwwroot\*";
+    [string] $executingFileFullPath = "/var/www/www-root/data/www/weblogger.t109.tech/SampleOnlineMall.WebLogger.dll";
+    [string] $serviceName = "weblogger.service";
+    [string] $siteUrl = "https://weblogger.t109.tech";
+
+    DeployAspNetCore60ApiSiteToUbuntuHost -remoteFolder $remoteFolder -projectPath $projectPath -projectBuildPath $projectBuildPath -wwwRootFolder $wwwRootFolder -serviceName $serviceName -executingFileFullPath $executingFileFullPath -siteUrl $siteUrl
+
+}
 function LogAndExit ([string] $text)
 {
     log $text
@@ -260,16 +282,7 @@ function DeployAspNetCore60ApiSiteToUbuntuHost ([string] $remoteFolder, [string]
     LogAndOutput -text  "Creating session";
     
     # session
-    try 
-    {
-        $deploySession = New-PSSession -HostName $script:deployAddress01 -KeyFilePath "C:\Users\Admin\.ssh\id_rsa";       
-    }
-    catch 
-    {
-            log "Unable to crate session: $($_)"
-            exit
-    }
-    
+    $deploySession = CreateOpenSshSession | Select-Object -Last 1
     
     LogAndOutput -text "Session opened successfully";
 
@@ -306,9 +319,12 @@ function DeployAspNetCore60ApiSiteToUbuntuHost ([string] $remoteFolder, [string]
     LogAndOutput -text  "Copying data";
     Copy-Item $projectBuildPath -ToSession $deploySession -Destination $remoteFolder -Recurse -Force ;
     
-    if (-not [string]::IsNullOrEmpty($wwwRootFolder))
+    LogAndOutput -text  "Copying wwwroot";
+    [bool] $wwwrootSpecified=(-not [string]::IsNullOrEmpty($wwwRootFolder));
+    LogAndOutput -text  "wwwroot variable specified: $($wwwrootSpecified)";
+    if ($wwwrootSpecified)
     {
-       Copy-Item $wwwRootFolder -ToSession $deploySession -Destination $remoteFolder -Recurse -Force ;
+        Copy-Item $wwwRootFolder -ToSession $deploySession -Destination $remoteFolder -Recurse -Force ;
     }
     LogAndOutput -text  "Finished data copy";
 
@@ -346,6 +362,7 @@ function DeployAspNetCore60ApiSiteToUbuntuHost ([string] $remoteFolder, [string]
     LogAndOutput -text  "Deploy completed successfully";
 
     Start-process -FilePath $operaExeFullPath -ArgumentList $siteUrl;
+    pause
 }
 
 
@@ -355,13 +372,7 @@ function DeployBalzorWasm60SiteToUbuntuHost ([string] $remoteFolder, [string] $p
     LogAndOutput -text  "Creating session";
     
     # session
-    try {
-        $deploySession = New-PSSession -HostName $script:deployAddress01 -KeyFilePath "C:\Users\Admin\.ssh\id_rsa";       
-    }
-    catch {
-            log "Unable to crate session: $($_)"
-            exit
-    }
+    $deploySession = CreateOpenSshSession | Select-Object -Last 1
     
     LogAndOutput -text "Session opened successfully";
 
@@ -411,13 +422,8 @@ function DeployHtmlAboutmeSite([string] $_transactionId)
         return;
     }
 
-    
-    $script:deployAddress01
-
-
     # session
-    $deploySession = New-PSSession -HostName $script:deployAddress01 -KeyFilePath "C:\Users\Admin\.ssh\id_rsa";   
-    
+    $deploySession = CreateOpenSshSession | Select-Object -Last 1
 
     # delete folder
     Invoke-Command -Session $deploySession -ScriptBlock    {  Invoke-Expression "sudo rm -r -f  /var/www/www-root/data/www/aboutme.t109.tech";}
@@ -501,10 +507,8 @@ function FeedAssortmentToMallAssortWebApi([string] $_transactionId)
         return;
     }
     
-    [string] $controllerUrl02 = "https://mallassortapi01.t109.tech/api/assortment/insertcommodityitem";
+    [string] $controllerUrl02 = "https://mallassortapi01.t109.tech/api/assortment/insertitem";
     [string] $imagePath = "C:\Develop\SampleOnlineMallAssortment";
-
-    [string] $dllFullPath ="C:\Develop\SampleOnlineMall\SampleOnlineMall.AssortmentApi\bin\Release\net6.0\SampleOnlineMall.Core.dll"
 
     # Add-Type $source
 
@@ -559,17 +563,39 @@ function FeedAssortmentToMallAssortWebApi([string] $_transactionId)
     pause
 }
 
+function GetMessagesStatus ([string] $_transactionId)
+{
+    # Add-Type $source
+    $controllerUrl="https://weblogger.t109.tech/";
+    Invoke-RestMethod -Method 'Get' -Uri $controllerUrl -ContentType "application/json; charset=utf-8"
+    pause
+}
+function SendWebApiTestMessage([string] $_transactionId)
+{
+    # Add-Type $source
+    $controllerUrl="https://weblogger.t109.tech/insertitem/";
+    Add-Type -Path $dllFullPath
+    [SampleOnlineMall.Core.WebLoggerMessage] $msg = new-object SampleOnlineMall.Core.WebLoggerMessage
+    $msg.Sender = "console"
+    $msg.Message = "Test message"
+    $jsonObj = ConvertTo-Json -InputObject $msg -Depth 100 
+    Log "Sending json obj"
+    Log $msg
+    Invoke-RestMethod -Method 'Post' -Uri $controllerUrl -ContentType "application/json; charset=utf-8" -Body $jsonObj 
+    pause  
+}
 function DeleteAllAssortmentItems ([string] $_transactionId)
 {
-    if($callType -eq 'plain')
-    {
-        # this is made to start transaction in a separate window
-        [string] $argList = "-file $scriptFileFullPath -transactionId $_transactionId -callType 'external-from-self' ";
-        Start-process -FilePath $pwshPath -ArgumentList $argList -PassThru;
-        return;
-    }
-    [string] $controllerUrl = "https://mallassortapi01.t109.tech/api/assortment/deleteallcommodityitems";
-    Invoke-RestMethod -Method 'Delete' -Uri $controllerUrl -ContentType "application/json"
+    # Add-Type $source
+    $controllerUrl="https://mallassortapi01.t109.tech/deleteallitems/";
+    Invoke-RestMethod -Method 'Delete' -Uri $controllerUrl -ContentType "application/json; charset=utf-8"
+    pause
+}
+function DeleteAllWebLoggerMessages ([string] $_transactionId)
+{
+    # Add-Type $source
+    $controllerUrl="https://weblogger.t109.tech/deleteallitems/";
+    Invoke-RestMethod -Method 'Delete' -Uri $controllerUrl -ContentType "application/json; charset=utf-8"
     pause
 }
 
@@ -586,16 +612,7 @@ function ViewPostgresDbsOnRemoteHost ([string] $_transactionId)
     LogAndOutput -text  "Creating session";
     
     # session
-    try 
-    {
-        $deploySession = New-PSSession -HostName $script:deployAddress01 -KeyFilePath "C:\Users\Admin\.ssh\id_rsa";       
-    }
-    catch 
-    {
-            log "Unable to crate session: $($_)"
-            exit
-    }
-    
+    $deploySession = CreateOpenSshSession | Select-Object -Last 1
     
     LogAndOutput -text "Session opened successfully";
 
@@ -608,16 +625,7 @@ function CreateAssortDbOnRemoteHost ([string] $_transactionId)
     LogAndOutput -text  "Creating session";
     
     # session
-    try 
-    {
-        $deploySession = New-PSSession -HostName $script:deployAddress01 -KeyFilePath "C:\Users\Admin\.ssh\id_rsa";       
-    }
-    catch 
-    {
-            log "Unable to crate session: $($_)"
-            exit
-    }
-    
+    $deploySession = CreateOpenSshSession | Select-Object -Last 1
     
     LogAndOutput -text "Session opened successfully";
 
@@ -630,16 +638,7 @@ function DeleteAssortDbOnRemoteHost ([string] $_transactionId)
     LogAndOutput -text  "Creating session";
     
     # session
-    try 
-    {
-        $deploySession = New-PSSession -HostName $script:deployAddress01 -KeyFilePath "C:\Users\Admin\.ssh\id_rsa";       
-    }
-    catch 
-    {
-            log "Unable to crate session: $($_)"
-            exit
-    }
-    
+    $deploySession = CreateOpenSshSession | Select-Object -Last 1
     
     LogAndOutput -text "Session opened successfully";
 
@@ -648,21 +647,51 @@ function DeleteAssortDbOnRemoteHost ([string] $_transactionId)
 }
 
 
-function FillClientsDb()
+function CreateWebLoggerDbOnRemoteHost ([string] $_transactionId)
 {
-
     LogAndOutput -text  "Creating session";
     
     # session
+    $deploySession = CreateOpenSshSession | Select-Object -Last 1
+    
+    LogAndOutput -text "Session opened successfully";
+
+    Invoke-Command -Session $deploySession -ScriptBlock { Invoke-Expression "sudo -u postgres psql -c 'CREATE DATABASE WebLogger'"; }
+
+}
+
+function DeleteWebLoggerDbOnRemoteHost ([string] $_transactionId)
+{
+    LogAndOutput -text  "Creating session";
+    
+    # session
+    $deploySession = CreateOpenSshSession | Select-Object -Last 1
+
+    LogAndOutput -text "Session opened successfully";
+
+    Invoke-Command -Session $deploySession -ScriptBlock { Invoke-Expression "sudo -u postgres psql -c 'DROP DATABASE WebLogger'"; }
+}
+
+function CreateOpenSshSession()
+{
     try 
     {
         $deploySession = New-PSSession -HostName $script:deployAddress01 -KeyFilePath "C:\Users\Admin\.ssh\id_rsa";       
     }
     catch 
     {
-            log "Unable to crate session: $($_)"
-            exit
+        log "Unable to crate session: $($_)"
+        exit
     }
+    $deploySession
+}
+function _FillClientsDb()
+{
+    # doesnt work
+    LogAndOutput -text  "Creating session";
+    
+    # session
+    $deploySession = CreateOpenSshSession | Select-Object -Last 1
 
     [string] $createTableQuery = "CREATE TABLE clients 
                                     (
@@ -674,18 +703,12 @@ function FillClientsDb()
                                         email VARCHAR ( 255 ) UNIQUE NOT NULL,
                                         created_on TIMESTAMP NOT NULL
                                     )";
-
     [string] $insertClient1Query = "INSERT INTO clients (id, username, name, surname, email) values ($(New-Guid), 'Clinent1', 'Name1', 'Surname1', 30, 'email.dot.com')"
-
     LogAndOutput -text "Session opened successfully";
     Invoke-Command -Session $deploySession -ScriptBlock { Invoke-Expression "sudo -u postgres psql -c 'DROP DATABASE Crm'"; }
-    pause
     Invoke-Command -Session $deploySession -ScriptBlock { Invoke-Expression "sudo -u postgres psql -c 'CREATE DATABASE Crm'"; }
-    pause
     Invoke-Command -Session $deploySession -ScriptBlock { Invoke-Expression "sudo -u postgres psql -c '$createTableQuery'"; }
-    pause
     Invoke-Command -Session $deploySession -ScriptBlock { Invoke-Expression "sudo -u postgres psql -c '$insertClient1Query'"; }
-    pause
 }
 
 
@@ -703,15 +726,23 @@ function ExecMenuItem([string] $menuItem) {
     elseif ($ex -eq "100101") { DeployApi01 -_transactionId $ex }
     elseif ($ex -eq "100102") { DeployStore01 -_transactionId $ex }
     elseif ($ex -eq "100110") { DeployHtmlAboutmeSite -_transactionId $ex}
+    elseif ($ex -eq "100115") { DeployWebLogger -_transactionId $ex}
 
-    elseif ($ex -eq "200001") {GetAssortmentStatus -_transactionId $ex}
+    elseif ($ex -eq "200001") { GetAssortmentStatus -_transactionId $ex}
     elseif ($ex -eq "200101") { DeploySampleMallAssortWebApi -_transactionId $ex}
     elseif ($ex -eq "200102") { FeedAssortmentToMallAssortWebApi -_transactionId $ex}
     elseif ($ex -eq "203101") { DeleteAllAssortmentItems -_transactionId $ex}
 
-    elseif ($ex -eq "250000") { ViewPostgresDbsOnRemoteHost -_transactionId $ex}
-    elseif ($ex -eq "250101") { CreateAssortDbOnRemoteHost -_transactionId $ex}
-    elseif ($ex -eq "253101") { DeleteAssortDbOnRemoteHost -_transactionId $ex}
+    elseif ($ex -eq "210000") { GetMessagesStatus -_transactionId $ex}
+    elseif ($ex -eq "210101") { SendWebApiTestMessage -_transactionId $ex}
+    elseif ($ex -eq "213101") { DeleteAllWebLoggerMessages -_transactionId $ex}
+
+    elseif ($ex -eq "750000") { ViewPostgresDbsOnRemoteHost -_transactionId $ex}
+    elseif ($ex -eq "750101") { CreateAssortDbOnRemoteHost -_transactionId $ex}
+    elseif ($ex -eq "753101") { DeleteAssortDbOnRemoteHost -_transactionId $ex}
+
+    elseif ($ex -eq "750102") { CreateWebLoggerDbOnRemoteHost -_transactionId $ex}
+    elseif ($ex -eq "753102") { DeleteWebLoggerDbOnRemoteHost -_transactionId $ex}
 
     elseif ($ex -eq "300101") { FillClientsDb -_transactionId $ex}
 

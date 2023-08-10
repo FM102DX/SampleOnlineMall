@@ -11,6 +11,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleOnlineMall.Core", "Sa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleOnlineMall.Service", "SampleOnlineMall.Service\SampleOnlineMall.Service.csproj", "{1B7BD8A4-6D67-413E-8063-21A65958A15C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebLogger", "WebLogger", "{73E58599-8E32-4A18-88AF-DA652E84AF6B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleOnlineMall.WebLogger", "SampleOnlineMall.WebLogger\SampleOnlineMall.WebLogger.csproj", "{3B60129C-2AF3-45E2-B63A-CE822CA82DB6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,9 +37,16 @@ Global
 		{1B7BD8A4-6D67-413E-8063-21A65958A15C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1B7BD8A4-6D67-413E-8063-21A65958A15C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1B7BD8A4-6D67-413E-8063-21A65958A15C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B60129C-2AF3-45E2-B63A-CE822CA82DB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B60129C-2AF3-45E2-B63A-CE822CA82DB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B60129C-2AF3-45E2-B63A-CE822CA82DB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B60129C-2AF3-45E2-B63A-CE822CA82DB6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3B60129C-2AF3-45E2-B63A-CE822CA82DB6} = {73E58599-8E32-4A18-88AF-DA652E84AF6B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0C280E46-39B2-4D5B-977F-38B4085CD8ED}

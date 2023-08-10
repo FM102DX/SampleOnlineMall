@@ -44,6 +44,11 @@ namespace SampleOnlineMall
             builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             var cnnStr = builder.Configuration.GetConnectionString("PostgreConnection");
 
+            var loggerOptions = new WebApiAsyncRepositoryOptions()
+                        .SetLogger(_logger)
+                        .SetBaseAddress("https://weblogger.t109.tech")
+                        .SetInsertHostPath("insertmessage/");
+
             // Add services to the container
             builder.Services.AddSingleton(typeof(Microsoft.Extensions.Configuration.ConfigurationManager), (x) => builder.Configuration);
             builder.Services.AddScoped(typeof(DbContext), typeof(EfPostgresDbContext));
@@ -52,6 +57,10 @@ namespace SampleOnlineMall
             builder.Services.AddSingleton(typeof(Serilog.ILogger), (x) => _logger);
             builder.Services.AddScoped(typeof(IAsyncRepository<CommodityItem>), typeof(EfAsyncRepository<CommodityItem>));
             builder.Services.AddScoped<Mapper>();
+            builder.Services.AddScoped(typeof(WebLoggerManager), (x) => new WebLoggerManager("assortment", loggerOptions));
+
+
+
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
