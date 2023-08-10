@@ -55,6 +55,7 @@ namespace SampleOnlineMall
         public async Task<IActionResult> InsertCommodityItem([FromBody] WebLoggerMessage item)
         {
             var rezult = await _itemManager.InsertFromWebApi(item);
+
             if (rezult.Success)
             {
                 return StatusCode(201, CommonOperationResult.SayOk());

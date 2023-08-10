@@ -103,8 +103,8 @@ namespace SampleOnlineMall.DataAccess
 
         public Task<bool> Exists(Guid id)
         {
-            T t = this.GetByIdOrNullAsync(id).Result;
-            return Task.FromResult(t == null);
+            var t = this.GetByIdOrNullAsync(id).Result;
+            return Task.FromResult(t != null);
         }
 
         public Task<CommonOperationResult> InitAsync(bool deleteDb=false)

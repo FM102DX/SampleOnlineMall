@@ -39,8 +39,8 @@
                     <td class="AssortControllerSkuDisplayColumnHeader" id="Description"> <b>Description</b> </td>
                     <td class="AssortControllerSkuDisplayColumnHeader" id="CreatedDateTime"> <b>CreatedDateTime</b></td>
                     </tr>
-                    @foreach (WebLoggerMessage item in items.Where(x=>x.Sender=="assortment"))
-                    {
+                @foreach (WebLoggerMessage item in items.Where(x => x.Sender == "assortment").OrderByDescending(x => x.CreatedDateTime))
+                {
                         <tr>
                         <td class="AssortControllerSkuDisplayTableCell" id="Sender"> @item.Sender </td>
                         <td class="AssortControllerSkuDisplayTableCell" id="Description"> @item.Message </td>
@@ -59,7 +59,7 @@
                     <td class="AssortControllerSkuDisplayColumnHeader" id="Description"> <b>Description</b> </td>
                     <td class="AssortControllerSkuDisplayColumnHeader" id="CreatedDateTime"> <b>CreatedDateTime</b></td>
                     </tr>
-                    @foreach (WebLoggerMessage item in items.Where(x=>x.Sender=="console"))
+                    @foreach (WebLoggerMessage item in items.Where(x=>x.Sender=="console").OrderByDescending(x => x.CreatedDateTime))
                     {
                         <tr>
                         <td class="AssortControllerSkuDisplayTableCell" id="Sender"> @item.Sender </td>

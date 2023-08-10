@@ -85,6 +85,12 @@ namespace SampleOnlineMall.Core.Managers
 
             try
             {
+                var exists = await _repo.Exists(item.Id);
+                _logger.Information($"Checking item existance name={item.Name}, result: {exists}");
+                if (exists)
+                {
+                    return CommonOperationResult.SayFail($"Unable to insert assortment item with name={item.Name}");
+                }
 
                 //saving object
                 var convertedItem = _mapper.CommodityItemFromCommodityItemApiFeed(item);
@@ -135,17 +141,12 @@ namespace SampleOnlineMall.Core.Managers
                 ResizeImageToWidthAndSave(secondPicPath, secondPicPathS, 300);
                 ResizeImageToWidthAndSave(thirdPicPath, thirdPicPathS, 300);
 
-
-
-
                 return CommonOperationResult.SayOk();
-
             }
             catch (Exception ex)
             {
                 _logger.Error($"{ex.Message}");
                 return CommonOperationResult.SayFail($"Ex={ex.Message} InnerEx={ex.InnerException}");
-
             }
         }
         public static void ResizeImageToWidthAndSave(string source, string target, int targetWidth)

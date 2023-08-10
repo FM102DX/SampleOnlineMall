@@ -10,7 +10,7 @@ using System.Collections.Generic;
 namespace SampleOnlineMall
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("")]
     public class AssortmentController : Controller
     {
         public Serilog.ILogger _logger { get; set; }
@@ -44,6 +44,7 @@ namespace SampleOnlineMall
         public async Task<IActionResult> InsertCommodityItem([FromBody] CommodityItemApiFeed commodityItem)
         {
             var rezult = await _commodityItemManager.InsertFromWebApi(commodityItem);
+
             if (rezult.Success)
             {
                 _webLoggerManager.Log($"Successfully added assortment item name={commodityItem.Name}");

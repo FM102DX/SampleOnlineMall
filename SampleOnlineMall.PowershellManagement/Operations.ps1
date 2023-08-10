@@ -193,6 +193,28 @@ function PerformSecondsCountDown ([int] $seconds, [string]$prefix="Performing co
 
 #CORE CONTENT
 
+
+
+
+function DeployMallBlazorFrontend ([string] $_transactionId)
+{
+    if($callType -eq 'plain')
+    {
+        # this is made to start transaction in a separate window
+        [string] $argList = "-file $scriptFileFullPath -transactionId $_transactionId -callType 'external-from-self' ";
+        Start-process -FilePath $pwshPath -ArgumentList $argList -PassThru;
+        return;
+    }
+    
+    [string] $remoteFolder = "/var/www/www-root/data/www/sampleonlinemall.t109.tech";
+    [string] $projectPath =      "C:\Develop\SampleOnlineMall\SampleOnlineMall.FrontEnd.Blazor";
+    [string] $projectBuildPath = "C:\Develop\SampleOnlineMall\SampleOnlineMall.FrontEnd.Blazor\bin\Release\net6.0";
+    [string] $siteUrl = "https://sampleonlinemall.t109.tech";
+
+    DeployBalzorWasm60SiteToUbuntuHost -remoteFolder $remoteFolder -projectPath $projectPath -projectBuildPath $projectBuildPath -siteUrl $siteUrl
+
+}
+
 function DeployStore01 ([string] $_transactionId)
 {
     if($callType -eq 'plain')
@@ -507,7 +529,7 @@ function FeedAssortmentToMallAssortWebApi([string] $_transactionId)
         return;
     }
     
-    [string] $controllerUrl02 = "https://mallassortapi01.t109.tech/api/assortment/insertitem";
+    [string] $controllerUrl02 = "https://mallassortapi01.t109.tech/insertitem";
     [string] $imagePath = "C:\Develop\SampleOnlineMallAssortment";
 
     # Add-Type $source
@@ -710,7 +732,7 @@ function _FillClientsDb()
     Invoke-Command -Session $deploySession -ScriptBlock { Invoke-Expression "sudo -u postgres psql -c '$createTableQuery'"; }
     Invoke-Command -Session $deploySession -ScriptBlock { Invoke-Expression "sudo -u postgres psql -c '$insertClient1Query'"; }
 }
-
+#18 - deploy
 
 #MENU
 function ExecMenuItem([string] $menuItem) {
@@ -723,20 +745,29 @@ function ExecMenuItem([string] $menuItem) {
 
     #menubegin
     
+    #old
     elseif ($ex -eq "100101") { DeployApi01 -_transactionId $ex }
     elseif ($ex -eq "100102") { DeployStore01 -_transactionId $ex }
-    elseif ($ex -eq "100110") { DeployHtmlAboutmeSite -_transactionId $ex}
-    elseif ($ex -eq "100115") { DeployWebLogger -_transactionId $ex}
 
-    elseif ($ex -eq "200001") { GetAssortmentStatus -_transactionId $ex}
-    elseif ($ex -eq "200101") { DeploySampleMallAssortWebApi -_transactionId $ex}
+    #10--html aboutme site
+    elseif ($ex -eq "100110") { DeployHtmlAboutmeSite -_transactionId $ex}
+
+    #20--MALL assortment
+    elseif ($ex -eq "200000") { GetAssortmentStatus -_transactionId $ex}
     elseif ($ex -eq "200102") { FeedAssortmentToMallAssortWebApi -_transactionId $ex}
     elseif ($ex -eq "203101") { DeleteAllAssortmentItems -_transactionId $ex}
+    elseif ($ex -eq "201801") { DeploySampleMallAssortWebApi -_transactionId $ex}
 
-    elseif ($ex -eq "210000") { GetMessagesStatus -_transactionId $ex}
-    elseif ($ex -eq "210101") { SendWebApiTestMessage -_transactionId $ex}
-    elseif ($ex -eq "213101") { DeleteAllWebLoggerMessages -_transactionId $ex}
+    #25--web logger
+    elseif ($ex -eq "250000") { GetMessagesStatus -_transactionId $ex}
+    elseif ($ex -eq "250101") { SendWebApiTestMessage -_transactionId $ex}
+    elseif ($ex -eq "253101") { DeleteAllWebLoggerMessages -_transactionId $ex}
+    elseif ($ex -eq "251801") { DeployWebLogger -_transactionId $ex}
 
+    #30--MALL blazor frontend
+    elseif ($ex -eq "301801") { DeployMallBlazorFrontend  -_transactionId $ex}
+
+    #75--database management
     elseif ($ex -eq "750000") { ViewPostgresDbsOnRemoteHost -_transactionId $ex}
     elseif ($ex -eq "750101") { CreateAssortDbOnRemoteHost -_transactionId $ex}
     elseif ($ex -eq "753101") { DeleteAssortDbOnRemoteHost -_transactionId $ex}

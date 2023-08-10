@@ -47,7 +47,7 @@ namespace SampleOnlineMall
             var loggerOptions = new WebApiAsyncRepositoryOptions()
                         .SetLogger(_logger)
                         .SetBaseAddress("https://weblogger.t109.tech")
-                        .SetInsertHostPath("insertmessage/");
+                        .SetInsertHostPath("insertitem/");
 
             // Add services to the container
             builder.Services.AddSingleton(typeof(Microsoft.Extensions.Configuration.ConfigurationManager), (x) => builder.Configuration);
