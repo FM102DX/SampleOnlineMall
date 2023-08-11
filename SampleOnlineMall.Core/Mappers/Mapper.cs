@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SampleOnlineMall.Core.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,11 +11,22 @@ namespace SampleOnlineMall.Core.Mappers
     {
         public CommodityItem CommodityItemFromCommodityItemApiFeed(CommodityItemApiFeed item)
         {
-            CommodityItem newItem = new CommodityItem();
-            newItem.Id= item.Id;
+            var newItem = new CommodityItem();
+            newItem.Id = item.Id;
             newItem.Name = item.Name;
-            newItem.Description= item.Description;
+            newItem.Description = item.Description;
             return newItem;
+        }
+
+        public CommodityItemFrontend CommodityItemFrontendFromCommodityItem(CommodityItem item)
+        {
+            var newItem = new CommodityItemFrontend();
+            newItem.Id = item.Id;
+            newItem.Name = item.Name;
+            newItem.Description = item.Description;
+            newItem.Pictures = new List<PictureInfo>();
+            return newItem;
+
         }
     }
 }

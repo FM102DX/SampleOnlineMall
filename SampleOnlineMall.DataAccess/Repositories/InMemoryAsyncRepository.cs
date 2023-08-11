@@ -85,5 +85,9 @@ namespace SampleOnlineMall.DataAccess.DataAccess
             return Task.FromResult(Data.Count);
         }
 
+        public Task<IEnumerable<T>> SearchAsync(string searchText)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

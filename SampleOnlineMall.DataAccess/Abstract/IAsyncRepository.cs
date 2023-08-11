@@ -19,6 +19,8 @@ namespace SampleOnlineMall.DataAccess.Abstract
 
         public Task<CommonOperationResult> AddAsync(T t);
 
+        public Task<IEnumerable<T>> SearchAsync(string searchText);
+
         public Task<CommonOperationResult> UpdateAsync(T t);
 
         public Task<CommonOperationResult> DeleteAsync(Guid id);

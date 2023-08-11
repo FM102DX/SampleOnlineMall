@@ -206,10 +206,10 @@ function DeployMallBlazorFrontend ([string] $_transactionId)
         return;
     }
     
-    [string] $remoteFolder = "/var/www/www-root/data/www/sampleonlinemall.t109.tech";
+    [string] $remoteFolder = "/var/www/www-root/data/www/mall.t109.tech";
     [string] $projectPath =      "C:\Develop\SampleOnlineMall\SampleOnlineMall.FrontEnd.Blazor";
     [string] $projectBuildPath = "C:\Develop\SampleOnlineMall\SampleOnlineMall.FrontEnd.Blazor\bin\Release\net6.0";
-    [string] $siteUrl = "https://sampleonlinemall.t109.tech";
+    [string] $siteUrl = "https://mall.t109.tech";
 
     DeployBalzorWasm60SiteToUbuntuHost -remoteFolder $remoteFolder -projectPath $projectPath -projectBuildPath $projectBuildPath -siteUrl $siteUrl
 
@@ -395,7 +395,6 @@ function DeployBalzorWasm60SiteToUbuntuHost ([string] $remoteFolder, [string] $p
     
     # session
     $deploySession = CreateOpenSshSession | Select-Object -Last 1
-    
     LogAndOutput -text "Session opened successfully";
 
     # delete folder
@@ -407,11 +406,10 @@ function DeployBalzorWasm60SiteToUbuntuHost ([string] $remoteFolder, [string] $p
 
     LogAndOutput -text  "Remote folder deleted $remoteFolder";
 
-    # ---- deploy 
-
+    #  ---- deploy 
     #  -- build 
     DeleteAllFilesFromFolder -folderName $projectBuildPath
-    "dotnet publish $projectPath -c Release -o $projectBuildPath --force "  | cmd
+    "dotnet publish $projectPath -c Release -o $projectBuildPath --force " | cmd
     
     log "Publish completed, now gonna copy";
 
@@ -430,6 +428,9 @@ function DeployBalzorWasm60SiteToUbuntuHost ([string] $remoteFolder, [string] $p
 
     LogAndOutput -text  "Deploy completed successfully";
     Start-process -FilePath $operaExeFullPath -ArgumentList $siteUrl;
+    
+    pause
+
 }
 
 
@@ -668,6 +669,17 @@ function DeleteAssortDbOnRemoteHost ([string] $_transactionId)
 
 }
 
+function RemoveBinObjDirectoriesFromDirectoryRecursive([string] $dirName)
+{
+    get-childitem -Path $dirName -Include "bin" -Recurse -force | Remove-Item -Force -Recurse
+    get-childitem -Path $dirName -Include "obj" -Recurse -force | Remove-Item -Force -Recurse
+}
+
+function RemoveBinObjFromMallBlazorFrontend()
+{
+    RemoveBinObjDirectoriesFromDirectoryRecursive -dirName "C:\Develop\ActivityScheduler0"
+}
+
 
 function CreateWebLoggerDbOnRemoteHost ([string] $_transactionId)
 {
@@ -776,6 +788,10 @@ function ExecMenuItem([string] $menuItem) {
     elseif ($ex -eq "753102") { DeleteWebLoggerDbOnRemoteHost -_transactionId $ex}
 
     elseif ($ex -eq "300101") { FillClientsDb -_transactionId $ex}
+    
+    elseif ($ex -eq "900101") { RemoveBinObjFromMallBlazorFrontend }
+
+    
 
     elseif ($ex -eq "99") { $script:canExit = $true }
     else {

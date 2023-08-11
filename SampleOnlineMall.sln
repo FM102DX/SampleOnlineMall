@@ -17,7 +17,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleOnlineMall.WebLogger"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Frontend", "Frontend", "{D9D7416B-0506-454D-8CF5-53BB9A16E1A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleOnlineMall.FrontEnd.Blazor", "SampleOnlineMall.FrontEnd.Blazor\SampleOnlineMall.FrontEnd.Blazor.csproj", "{DBDEBB00-74EC-488D-8E3B-90F831F96E83}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleOnlineMall.FrontEnd.Blazor", "SampleOnlineMall.FrontEnd.Blazor\SampleOnlineMall.FrontEnd.Blazor.csproj", "{DBDEBB00-74EC-488D-8E3B-90F831F96E83}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Backend", "Backend", "{FB842107-F2BE-4236-8078-EE66506A02F6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,6 +56,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{5484D303-BFEC-4DE4-87B1-67C0DC76210B} = {FB842107-F2BE-4236-8078-EE66506A02F6}
 		{3B60129C-2AF3-45E2-B63A-CE822CA82DB6} = {73E58599-8E32-4A18-88AF-DA652E84AF6B}
 		{DBDEBB00-74EC-488D-8E3B-90F831F96E83} = {D9D7416B-0506-454D-8CF5-53BB9A16E1A3}
 	EndGlobalSection

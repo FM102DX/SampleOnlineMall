@@ -61,7 +61,7 @@ namespace SampleOnlineMall.DataAccess.DataAccess
             return rez;
         }
 
-        public async Task<IEnumerable<T>> Search(string searchText)
+        public async Task<IEnumerable<T>> SearchAsync(string searchText)
         {
             IEnumerable<T> items =  new List<T>();
             try

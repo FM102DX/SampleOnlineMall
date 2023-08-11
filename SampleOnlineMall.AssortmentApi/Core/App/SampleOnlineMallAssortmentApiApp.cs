@@ -15,8 +15,11 @@ namespace SampleOnlineMall.Core.Appilcation
 
         public SampleOnlineMallAssortmentApiApp() 
         {
-            
+
         }
+
+        public String BaseUrl { get => "https://mallassortapi01.t109.tech/"; }
+        
 
         public String? BaseDirectory { get => System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location); }
 
