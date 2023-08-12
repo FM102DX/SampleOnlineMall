@@ -1,0 +1,8 @@
+﻿@page "/search/{searchText?}"
+@using SampleOnlineMall.FrontEnd.Blazor.Components
+@using SampleOnlineMall.FrontEnd.Blazor.Shared
+@using SampleOnlineMall.FrontEnd.Blazor.Pages
+@using SampleOnlineMall.FrontEnd.Blazor.Components.ShopItemCollection
+
+ 
+<ShopItemCollection UsageCase="@ShopItemCollection.ShopItemCollectionUsageCaseEnum.MainBarSearch" SearchText="@SearchText" />
