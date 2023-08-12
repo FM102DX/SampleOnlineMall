@@ -16,7 +16,6 @@ namespace SampleOnlineMall
         public Serilog.ILogger _logger { get; set; }
         public CommodityItemFrontendManager _itemManager { get; set; }
         public WebLoggerManager _webLoggerManager { get; set; }
-
         public AssortmentReadFrontend(CommodityItemFrontendManager itemManager, WebLoggerManager webLoggerManager, Serilog.ILogger logger)
         {
             _logger = logger;
@@ -26,26 +25,23 @@ namespace SampleOnlineMall
 
         [HttpGet]
         [Route("getall/")]
-        public async Task<IEnumerable<CommodityItemFrontend>> GetAllMessages()
+        public async Task<IEnumerable<CommodityItemFrontend>> GetAllItems()
         {
             return await _itemManager.GetAll();
         }
 
         [HttpGet]
         [Route("search/{searchText}")]
-        public Task<IEnumerable<CommodityItemFrontend>> SearchFrontednAssort(string searchText)
+        public async Task<IEnumerable<CommodityItemFrontend>> SearchFrontednAssort(string searchText)
         {
             throw new NotImplementedException();
         }
 
         [HttpGet]
         [Route("GetByIdOrNull/{id}")]
-        public Task<CommodityItemFrontend> GetByIdOrNull(Guid id)
+        public async Task<CommodityItemFrontend> GetByIdOrNull(Guid id)
         {
-            //return _itemManager.Repository.GetByIdOrNull(id);
-            throw new NotImplementedException();
+            return await _itemManager.GetByIdOrNull(id);
         }
-
-
     }
 }

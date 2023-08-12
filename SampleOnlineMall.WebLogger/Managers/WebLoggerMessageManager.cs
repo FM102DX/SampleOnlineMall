@@ -67,7 +67,6 @@ namespace SampleOnlineMall.Core.Managers
             {
                 _logger.Error($"{ex.Message}");
                 return CommonOperationResult.SayFail($"{ex.Message}");
-
             }
         }
 

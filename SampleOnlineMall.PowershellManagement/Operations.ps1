@@ -677,7 +677,7 @@ function RemoveBinObjDirectoriesFromDirectoryRecursive([string] $dirName)
 
 function RemoveBinObjFromMallBlazorFrontend()
 {
-    RemoveBinObjDirectoriesFromDirectoryRecursive -dirName "C:\Develop\ActivityScheduler0"
+    RemoveBinObjDirectoriesFromDirectoryRecursive -dirName "C:\Develop\SampleOnlineMall"
 }
 
 
@@ -746,6 +746,30 @@ function _FillClientsDb()
 }
 #18 - deploy
 
+
+function RunTransaction ([string] $_transactionId)
+{
+        # this is made to start transaction in a separate window
+        [string] $argList = "-file $scriptFileFullPath -transactionId $_transactionId -callType 'external-from-self' ";
+        Start-process -FilePath $pwshPath -ArgumentList $argList -PassThru;
+        return;
+}
+function RunTransactionAndWait ([string] $_transactionId)
+{
+        # this is made to start transaction in a separate window
+        [string] $argList = "-file $scriptFileFullPath -transactionId $_transactionId -callType 'external-from-self' ";
+        Start-process -FilePath $pwshPath -ArgumentList $argList -Wait;
+        return;
+}
+
+function DeploySampleMallAssortWebApiWithAssortmentFill ([string] $_transactionId)
+{
+    RunTransactionAndWait -_transactionId "201801";
+    RunTransactionAndWait -_transactionId "203101";
+    RunTransactionAndWait -_transactionId "200102";
+    return;
+}
+
 #MENU
 function ExecMenuItem([string] $menuItem) {
 
@@ -769,6 +793,7 @@ function ExecMenuItem([string] $menuItem) {
     elseif ($ex -eq "200102") { FeedAssortmentToMallAssortWebApi -_transactionId $ex}
     elseif ($ex -eq "203101") { DeleteAllAssortmentItems -_transactionId $ex}
     elseif ($ex -eq "201801") { DeploySampleMallAssortWebApi -_transactionId $ex}
+    elseif ($ex -eq "201802") { DeploySampleMallAssortWebApiWithAssortmentFill -_transactionId $ex}
 
     #25--web logger
     elseif ($ex -eq "250000") { GetMessagesStatus -_transactionId $ex}
@@ -781,17 +806,14 @@ function ExecMenuItem([string] $menuItem) {
 
     #75--database management
     elseif ($ex -eq "750000") { ViewPostgresDbsOnRemoteHost -_transactionId $ex}
-    elseif ($ex -eq "750101") { CreateAssortDbOnRemoteHost -_transactionId $ex}
-    elseif ($ex -eq "753101") { DeleteAssortDbOnRemoteHost -_transactionId $ex}
+    elseif ($ex -eq "750101") { CreateAssortDbOnRemoteHost  -_transactionId $ex}
+    elseif ($ex -eq "753101") { DeleteAssortDbOnRemoteHost  -_transactionId $ex}
 
     elseif ($ex -eq "750102") { CreateWebLoggerDbOnRemoteHost -_transactionId $ex}
     elseif ($ex -eq "753102") { DeleteWebLoggerDbOnRemoteHost -_transactionId $ex}
 
     elseif ($ex -eq "300101") { FillClientsDb -_transactionId $ex}
-    
     elseif ($ex -eq "900101") { RemoveBinObjFromMallBlazorFrontend }
-
-    
 
     elseif ($ex -eq "99") { $script:canExit = $true }
     else {

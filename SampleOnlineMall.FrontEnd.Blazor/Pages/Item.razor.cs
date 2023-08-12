@@ -7,15 +7,19 @@ using System.Collections;
 using SampleOnlineMall.FrontEnd.Blazor.Data;
 using SampleOnlineMall.Core;
 using SampleOnlineMall.Core.Models;
+using SampleOnlineMall.Core.Mappers;
 
-namespace T109.ActiveDive.FrontEnd.Blazor.Pages
-          
+namespace SampleOnlineMall.FrontEnd.Blazor.Pages
+
 {
     public partial class Item : ComponentBase
     {
 
         [Inject]
         public StoreManager Manager { get; set; }
+
+        [Inject]
+        public Mapper Mpr { get; set; }
 
         [Inject]
         public Serilog.ILogger Logger { get; set; }
@@ -28,7 +32,7 @@ namespace T109.ActiveDive.FrontEnd.Blazor.Pages
 
         public List<SelectableImage> ImgList { get; set; }= new List<SelectableImage>();
 
-        public CommodityItemFrontend ActualItem { get; set; } = new CommodityItemFrontend();
+        public CommodityItemFrontendDisplayed ActualItem { get; set; } = new CommodityItemFrontendDisplayed();
 
         protected override async Task OnInitializedAsync()
         {
@@ -36,13 +40,17 @@ namespace T109.ActiveDive.FrontEnd.Blazor.Pages
             {
                 ActualItem = await Manager.GetByIdOrNullAsync(ItemId);
 
+                Logger.Information($"ActualItem.Name={ActualItem.Name}");
+                
                 List<PictureInfo> pictureinfo = ActualItem.Pictures.ToList();
 
                 for (int i = 0; i < pictureinfo.Count; i++)
                 {
-                    ImgList.Add(new SelectableImage() { Id = 0, FullSizePath = pictureinfo[i].MediumPictureFullPath, MidSizePath = pictureinfo[i].MediumPictureFullPath, ThumbPath = pictureinfo[i].SmallPictureFullPath });
+                    ImgList.Add(new SelectableImage() { Id = i, FullSizePath = pictureinfo[i].MediumPictureFullPath, MidSizePath = pictureinfo[i].MediumPictureFullPath, ThumbPath = pictureinfo[i].SmallPictureFullPath });
                 }
-                
+
+                Logger.Information($"ImgList.Count={ImgList.Count} pictureinfo.count={pictureinfo.Count}");
+
                 //SetCurrentImage();
 
                 //SmallImgSelector.MySelectionChanged += SmallImgSelector_MySelectionChanged;
@@ -55,5 +63,14 @@ namespace T109.ActiveDive.FrontEnd.Blazor.Pages
 
         public string CurrentImageFullPath { get; set; }
 
+
+        private SelectableImage SelectableImageFromPictureInfo(PictureInfo pictureInfo)
+        {
+            var img = new SelectableImage();
+            img.ThumbPath = pictureInfo.SmallPictureFullPath;
+            img.MidSizePath = pictureInfo.MediumPictureFullPath;
+            img.FullSizePath = pictureInfo.BigPictureFullPath;
+            return img;
+        }
     }
 }

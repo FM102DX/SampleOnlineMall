@@ -21,23 +21,27 @@ namespace SampleOnlineMall.Core.Managers
         private IAsyncRepository<CommodityItem> _repo;
         private Serilog.ILogger _logger;
         private SampleOnlineMallAssortmentApiApp _app;
+        private WebLoggerManager _webLogMgr;
         private Mapper _mapper;
-        public CommodityItemFrontendManager(IAsyncRepository<CommodityItem> repo, Serilog.ILogger logger, SampleOnlineMallAssortmentApiApp app, Mapper mapper)
+        public CommodityItemFrontendManager(IAsyncRepository<CommodityItem> repo, Serilog.ILogger logger, SampleOnlineMallAssortmentApiApp app, Mapper mapper, WebLoggerManager webLogMgr)
         {
             _repo = repo;
             _logger = logger;
             _app = app;
             _mapper = mapper;
+            _webLogMgr = webLogMgr;
         }
 
         public async Task<IEnumerable<CommodityItemFrontend>> GetAll()
         {
-            var items = (await _repo.GetAllAsync()).ToList().Select(x=>_mapper.CommodityItemFrontendFromCommodityItem(x));
+            var items = (await _repo.GetAllAsync()).Select(x => _mapper.CommodityItemFrontendFromCommodityItem(x)).ToList() ;
             foreach (var item in items)
             {
-                item.Pictures = GetPictureInfoListForItem(item);
+                var x = GetPictureInfoListForItem(item);
+                item.Pictures = x;
             }
-            return (IEnumerable<CommodityItemFrontend>)Task.FromResult(items);
+            _webLogMgr.Log($"{items[0].Pictures.Count()}");
+            return items;
         }
 
         private List<PictureInfo> GetPictureInfoListForItem(CommodityItemFrontend item)
@@ -59,26 +63,11 @@ namespace SampleOnlineMall.Core.Managers
         {
             return await _repo.GetCountAsync();
         }
-
-        public async Task<CommonOperationResult> DeleteItemById(Guid id)
+        public async Task<CommodityItemFrontend> GetByIdOrNull(Guid id)
         {
-            try
-            {
-                await _repo.DeleteAsync(id);
-                var imgPath = _app.GetCommodityItemImageDirectoryFromGuid(id);
-                var exists = Directory.Exists(imgPath);
-                _logger.Information($"trying to delete {imgPath}, it exists: {exists}");
-                if (exists)
-                {
-                    Directory.Delete(imgPath,true);
-                }
-                return CommonOperationResult.SayOk();
-            }
-            catch (Exception ex)
-            {
-                _logger.Error($"{ex.Message}");
-                return CommonOperationResult.SayFail($"{ex.Message}");
-            }
+            var item = _mapper.CommodityItemFrontendFromCommodityItem(await _repo.GetByIdOrNullAsync(id));
+            item.Pictures = GetPictureInfoListForItem(item);
+            return item;
         }
     }
 }

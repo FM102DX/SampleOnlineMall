@@ -31,7 +31,10 @@ namespace SampleOnlineMall.Core.Managers
 
         public async void Log (string text)
         {
-            var msg = new WebLoggerMessage() { Message = text, Sender = _sender };
+            var msg = new WebLoggerMessage();
+            msg.Message = text;
+            msg.Sender = _sender;
+
             await _repo.AddAsync(msg);
         }
     }

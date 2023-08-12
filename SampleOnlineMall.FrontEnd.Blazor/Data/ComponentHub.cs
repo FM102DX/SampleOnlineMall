@@ -14,6 +14,5 @@
 
         public delegate void DoingSearchHandler(string SearchText);
 
-
     }
 }

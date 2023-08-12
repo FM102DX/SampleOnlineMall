@@ -28,6 +28,7 @@
         <ul id="header">
             <li id="stack" tabindex="1" class="selected">Assortment</li>
             <li id="query" tabindex="2" class="">Console</li>
+            <li id="frontend" tabindex="3" class="">BlazorFrontend</li>
         </ul>
 
         <div id="stackpage" class="page" style="">
@@ -35,18 +36,18 @@
                         <ul id = "ConsoleMessagesCollection">
             <table>
                     <tr>
-                    <td class="AssortControllerSkuDisplayColumnHeader" id="Sender"> <b>Sender</b> </td>
-                    <td class="AssortControllerSkuDisplayColumnHeader" id="Description"> <b>Description</b> </td>
-                    <td class="AssortControllerSkuDisplayColumnHeader" id="CreatedDateTime"> <b>CreatedDateTime</b></td>
+                        <td class="AssortControllerSkuDisplayColumnHeader" id="Sender"> <b>Sender</b> </td>
+                        <td class="AssortControllerSkuDisplayColumnHeader" id="Description"> <b>Description</b> </td>
+                        <td class="AssortControllerSkuDisplayColumnHeader" id="CreatedDateTime"> <b>CreatedDateTime</b></td>
                     </tr>
                 @foreach (WebLoggerMessage item in items.Where(x => x.Sender == "assortment").OrderByDescending(x => x.CreatedDateTime))
                 {
-                        <tr>
+                    <tr>
                         <td class="AssortControllerSkuDisplayTableCell" id="Sender"> @item.Sender </td>
                         <td class="AssortControllerSkuDisplayTableCell" id="Description"> @item.Message </td>
                         <td class="AssortControllerSkuDisplayTableCell" id="CreatedDateTime">@item.CreatedDateTime</td>
-                        </tr>                                        
-                    }
+                    </tr>                                        
+                }
             </table>
 
         </div>
@@ -68,7 +69,26 @@
                         </tr>                                        
                     }
             </table>
+        
+        </div>
 
+        <div id="frontendpage" class="page" style="display: none;">
+            <h2 class="stackerror">Nothing here</h2>
+            <table>
+                    <tr>
+                    <td class="AssortControllerSkuDisplayColumnHeader" id="Sender"> <b>Sender</b> </td>
+                    <td class="AssortControllerSkuDisplayColumnHeader" id="Description"> <b>Description</b> </td>
+                    <td class="AssortControllerSkuDisplayColumnHeader" id="CreatedDateTime"> <b>CreatedDateTime</b></td>
+                    </tr>
+                    @foreach (WebLoggerMessage item in items.Where(x=>x.Sender=="blazorfrontend").OrderByDescending(x => x.CreatedDateTime))
+                    {
+                        <tr>
+                        <td class="AssortControllerSkuDisplayTableCell" id="Sender"> @item.Sender </td>
+                        <td class="AssortControllerSkuDisplayTableCell" id="Description"> @item.Message </td>
+                        <td class="AssortControllerSkuDisplayTableCell" id="CreatedDateTime">@item.CreatedDateTime</td>
+                        </tr>                                        
+                    }
+            </table>
         </div>
 
         <script>

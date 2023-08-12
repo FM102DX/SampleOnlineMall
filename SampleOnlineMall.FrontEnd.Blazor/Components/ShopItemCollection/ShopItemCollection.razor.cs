@@ -24,7 +24,7 @@ namespace SampleOnlineMall.FrontEnd.Blazor.Components.ShopItemCollection
         [Parameter]
         public string SearchText { get; set; }
 
-        public List<CommodityItemFrontend> ItemsNo { get; set; } = new List<CommodityItemFrontend>();
+        public List<CommodityItemFrontendDisplayed> ItemsNo { get; set; } = new List<CommodityItemFrontendDisplayed>();
 
         public string FullName { get; set; }
 

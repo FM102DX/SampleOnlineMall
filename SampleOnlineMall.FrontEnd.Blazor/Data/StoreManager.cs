@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SampleOnlineMall.Core;
+using SampleOnlineMall.Core.Mappers;
 using SampleOnlineMall.DataAccess.Abstract;
 using SampleOnlineMall.DataAccess.DataAccess;
 using System;
@@ -13,32 +14,35 @@ namespace SampleOnlineMall.FrontEnd.Blazor.Data
         private IAsyncRepository<CommodityItemFrontend> _repo { get; set; }
 
         private SampleOnlineMallFrontEndBlazorApp _app { get; set; }
+        
+        private Mapper _mapper { get; set; }
 
         public string StoreBaseUrl { get; set; }
 
-        public StoreManager(NavigationManager Navi, IAsyncRepository<CommodityItemFrontend> repo, SampleOnlineMallFrontEndBlazorApp app)
+        public StoreManager(NavigationManager Navi, IAsyncRepository<CommodityItemFrontend> repo, SampleOnlineMallFrontEndBlazorApp app, Mapper mapper)
         {
             StoreBaseUrl = Navi.BaseUri;
             _repo = repo;
             _app = app;
+            _mapper = mapper;
         }
         public string GetItemPageFullAddress(Guid itemId)
         {
             return $"{StoreBaseUrl}Item/" + itemId.ToString();
         }
-        public async Task<List<CommodityItemFrontend>> GetAllAsync()
+        public async Task<List<CommodityItemFrontendDisplayed>> GetAllAsync()
         {
-            return (await _repo.GetAllAsync()).ToList();
+            return (await _repo.GetAllAsync()).Select(x => _mapper.CommodityItemFrontendDisplayedFromTransport(x)).ToList();
         }
         
-        public async Task<List<CommodityItemFrontend>> Search(string searchText)
+        public async Task<List<CommodityItemFrontendDisplayed>> Search(string searchText)
         {
-            return (await _repo.SearchAsync(searchText)).ToList();
+            return (await _repo.SearchAsync(searchText)).Select(x=>_mapper.CommodityItemFrontendDisplayedFromTransport(x)).ToList();
         }
 
-        public async Task<CommodityItemFrontend> GetByIdOrNullAsync(Guid id)
+        public async Task<CommodityItemFrontendDisplayed> GetByIdOrNullAsync(Guid id)
         {
-            return await _repo.GetByIdOrNullAsync(id);
+            return _mapper.CommodityItemFrontendDisplayedFromTransport(await _repo.GetByIdOrNullAsync(id));
         }
 
 

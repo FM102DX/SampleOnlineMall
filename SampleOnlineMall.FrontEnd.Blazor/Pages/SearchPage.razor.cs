@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using static SampleOnlineMall.FrontEnd.Blazor.Components.ShopItemCollection.ShopItemCollection;
 
-namespace T109.ActiveDive.FrontEnd.Blazor.Pages
+namespace SampleOnlineMall.FrontEnd.Blazor.Pages
 {
     public partial class SearchPage : ComponentBase
     {

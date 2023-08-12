@@ -51,6 +51,12 @@ namespace SampleOnlineMall.WebLogger
             builder.Services.AddSingleton(typeof(Serilog.ILogger), (x) => _logger);
             builder.Services.AddScoped(typeof(IAsyncRepository<WebLoggerMessage>), typeof(EfAsyncRepository<WebLoggerMessage>));
 
+            builder.Services.AddCors(confg =>
+                confg.AddPolicy("AllowAll",
+                     p => p.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()));
+
             builder.Services.AddControllersWithViews();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -71,21 +77,19 @@ namespace SampleOnlineMall.WebLogger
             
             _logger.Information("P3");
 
-            try
-            {
-                app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
-                app.UseAuthorization();
+            app.UseAuthorization();
 
-                app.MapControllers();
-                _logger.Information("P31");
-                app.Run();
-            }
-            catch (Exception ex)
-            {
-                _logger.Information($"Error: {ex.Message}");
-            }
+            app.MapControllers();
+
+            app.UseCors("AllowAll");
+
             _logger.Information("P4");
+    
+            app.Run();
+            
+            _logger.Information("P5");
         }
     }
 }

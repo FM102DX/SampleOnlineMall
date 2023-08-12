@@ -28,5 +28,17 @@ namespace SampleOnlineMall.Core.Mappers
             return newItem;
 
         }
+        public CommodityItemFrontendDisplayed CommodityItemFrontendDisplayedFromTransport (CommodityItemFrontend item)
+        {
+            var newItem = new CommodityItemFrontendDisplayed();
+            newItem.Id = item.Id;
+            newItem.Name = item.Name;
+            newItem.Description = item.Description;
+            newItem.Pictures = item.Pictures.ToList();
+            return newItem;
+        }
+
+
+        
     }
 }
