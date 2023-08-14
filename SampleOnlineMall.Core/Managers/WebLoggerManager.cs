@@ -1,4 +1,5 @@
-﻿using SampleOnlineMall.DataAccess.DataAccess;
+﻿using SampleOnlineMall.Core.Models;
+using SampleOnlineMall.DataAccess.DataAccess;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,13 +30,25 @@ namespace SampleOnlineMall.Core.Managers
             _repo = new WebApiAsyncRepository<WebLoggerMessage>(_loggerOptions);
         }
 
-        public async void Log (string text)
+        public async void Log (string text, WebLoggerLogLevel logLevel= WebLoggerLogLevel.Information)
         {
             var msg = new WebLoggerMessage();
             msg.Message = text;
             msg.Sender = _sender;
-
+            msg.LogLevel = logLevel;
             await _repo.AddAsync(msg);
+        }
+        public async void Information(string text)
+        {
+            Log(text, WebLoggerLogLevel.Information);
+        }
+        public async void Error(string text)
+        {
+            Log(text, WebLoggerLogLevel.Error);
+        }
+        public async void Debug(string text)
+        {
+            Log(text, WebLoggerLogLevel.Debug);
         }
     }
 }

@@ -17,6 +17,10 @@ namespace SampleOnlineMall.FrontEnd.Blazor
     {
         public static async Task Main(string[] args)
         {
+            var builder = WebAssemblyHostBuilder.CreateDefault(args);
+            builder.RootComponents.Add<App>("#app");
+            builder.RootComponents.Add<HeadOutlet>("head::after");
+            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
             var _app = new SampleOnlineMallFrontEndBlazorApp();
             string logFilePath = System.IO.Path.Combine(_app.LogsDirectory, Functions.GetNextFreeFileName(_app.LogsDirectory, "SampleMallBlazorFrontend", "txt"));
@@ -38,13 +42,8 @@ namespace SampleOnlineMall.FrontEnd.Blazor
             webLogger.Log("Weblogger p1");
             _logger.Information("Blazor P1");
             
-            var builder = WebAssemblyHostBuilder.CreateDefault(args);
-            builder.RootComponents.Add<App>("#app");
-            builder.RootComponents.Add<HeadOutlet>("head::after");
-
             _logger.Information("Blazor P2");
 
-            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             builder.Services.AddSingleton(typeof(Serilog.ILogger), (x) => _logger);
 
             var webRepoOptions = new WebApiAsyncRepositoryOptions()
@@ -65,7 +64,9 @@ namespace SampleOnlineMall.FrontEnd.Blazor
             builder.Services.AddScoped(typeof(Mapper), typeof(Mapper));
             builder.Services.AddScoped(typeof(ComponentHub), typeof(ComponentHub));
             _logger.Information("Blazor P3");
-            await builder.Build().RunAsync();
+
+            var host = builder.Build();
+            await host.RunAsync();
         }
     }
 }
