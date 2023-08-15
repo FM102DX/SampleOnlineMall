@@ -47,12 +47,12 @@ namespace SampleOnlineMall
 
             if (rezult.Success)
             {
-                _webLoggerManager.Log($"Successfully added assortment item name={commodityItem.Name}");
+                _webLoggerManager.Information($"Successfully added assortment item name={commodityItem.Name} msg={rezult.Message}");
                 return StatusCode(201, CommonOperationResult.SayOk());
             }
             else
             {
-                _webLoggerManager.Log($"Error while adding assort position name={commodityItem.Name}");
+                _webLoggerManager.Error($"Error while adding assort position name={commodityItem.Name} err={rezult.Message}");
                 return StatusCode(501, CommonOperationResult.SayFail(rezult.Message));
             }
 

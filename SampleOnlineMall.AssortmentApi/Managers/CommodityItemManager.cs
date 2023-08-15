@@ -20,12 +20,14 @@ namespace SampleOnlineMall.Core.Managers
         private Serilog.ILogger _logger;
         private SampleOnlineMallAssortmentApiApp _app;
         private Mapper _mapper;
-        public CommodityItemManager(IAsyncRepository<CommodityItem> repo, Serilog.ILogger logger, SampleOnlineMallAssortmentApiApp app, Mapper mapper)
+        private WebLoggerManager _webLogger;
+        public CommodityItemManager(IAsyncRepository<CommodityItem> repo, WebLoggerManager webLogger, Serilog.ILogger logger, SampleOnlineMallAssortmentApiApp app, Mapper mapper)
         {
             _repo = repo;
             _logger = logger;
             _app = app;
             _mapper = mapper;
+            _webLogger = webLogger;
         }
 
         public async Task<IEnumerable<CommodityItem>> GetAll()
@@ -82,7 +84,7 @@ namespace SampleOnlineMall.Core.Managers
         public async Task<CommonOperationResult> InsertFromWebApi (CommodityItemApiFeed item)
         {
             _logger.Information($"This is ItemManager. Received commodity item name={item.Name}");
-
+            _webLogger.Log($"inserting item name={item.Name}");
             try
             {
                 var exists = await _repo.Exists(item.Id);
@@ -115,31 +117,34 @@ namespace SampleOnlineMall.Core.Managers
                 var thirdPicPathS= Path.Combine(picDirectory, "3s.jpg");
 
                 //pic1
-                imageByteArr = Convert.FromBase64String(item.FirstPic);
-                _logger.Information($"item.FirstPic {item.FirstPic.Length}");
-                File.WriteAllBytes(firstPicPath, imageByteArr);
+                if (!string.IsNullOrEmpty(item.FirstPic))
+                {
+                    imageByteArr = Convert.FromBase64String(item.FirstPic);
+                    File.WriteAllBytes(firstPicPath, imageByteArr);
+                    ResizeImageToWidthAndSave(firstPicPath, firstPicPathM, 700);
+                    ResizeImageToWidthAndSave(firstPicPath, firstPicPathS, 300);
+                }
 
                 //pic2
-                imageByteArr = Convert.FromBase64String(item.SecondPic);
-                _logger.Information($"item.SecondPic {item.SecondPic.Length}");
-                File.WriteAllBytes(secondPicPath, imageByteArr);
+                if (!string.IsNullOrEmpty(item.SecondPic))
+                {
+                    imageByteArr = Convert.FromBase64String(item.SecondPic);
+                    File.WriteAllBytes(secondPicPath, imageByteArr);
+                    ResizeImageToWidthAndSave(secondPicPath, secondPicPathM, 700);
+                    ResizeImageToWidthAndSave(secondPicPath, secondPicPathS, 300);
+                }
 
                 //pic3
-                imageByteArr = Convert.FromBase64String(item.ThirdPic);
-                _logger.Information($"item.ThirdPic {item.ThirdPic.Length}");
-                File.WriteAllBytes(thirdPicPath, imageByteArr);
-
+                if (!string.IsNullOrEmpty(item.ThirdPic))
+                {
+                    imageByteArr = Convert.FromBase64String(item.ThirdPic);
+                    File.WriteAllBytes(thirdPicPath, imageByteArr);
+                    ResizeImageToWidthAndSave(thirdPicPath, thirdPicPathM, 700);
+                    ResizeImageToWidthAndSave(thirdPicPath, thirdPicPathS, 300);
+                }
                 item.FirstPic = null;
                 item.SecondPic = null;
                 item.ThirdPic = null;
-
-                ResizeImageToWidthAndSave(firstPicPath, firstPicPathM, 700);
-                ResizeImageToWidthAndSave(secondPicPath, secondPicPathM, 700);
-                ResizeImageToWidthAndSave(thirdPicPath, thirdPicPathM, 700);
-
-                ResizeImageToWidthAndSave(firstPicPath, firstPicPathS, 300);
-                ResizeImageToWidthAndSave(secondPicPath, secondPicPathS, 300);
-                ResizeImageToWidthAndSave(thirdPicPath, thirdPicPathS, 300);
 
                 return CommonOperationResult.SayOk();
             }
@@ -149,7 +154,8 @@ namespace SampleOnlineMall.Core.Managers
                 return CommonOperationResult.SayFail($"Ex={ex.Message} InnerEx={ex.InnerException}");
             }
         }
-        public static void ResizeImageToWidthAndSave(string source, string target, int targetWidth)
+
+        public void ResizeImageToWidthAndSave(string source, string target, int targetWidth)
         {
             var img = Shim.Load(source);
             var format = img.Metadata.DecodedImageFormat;
@@ -159,15 +165,20 @@ namespace SampleOnlineMall.Core.Managers
             File.WriteAllBytes(target, memoryStream.ToArray());
         }
 
-
-        public static Shim ResizeImageToWidth(Shim source, int targetWidth)
+        public Shim ResizeImageToWidth(Shim source, int targetWidth)
         {
-            var ratio = source.Width / targetWidth;
-            var targetHeight = source.Height / ratio;
-            SixLabors.ImageSharp.Size targetSize = new SixLabors.ImageSharp.Size(targetWidth, targetHeight);
+            double ratio = 0;
+            if (targetWidth!=0)
+            {
+                ratio= (double) source.Width / targetWidth;
+            }
+
+            var targetHeightVar = source.Height / ratio;
+            _webLogger.Log($"source.Width={source.Width} ratio={ratio} targetWidth={targetWidth} targetHeightVar ={targetHeightVar}");
+            int targetHeight32 = Convert.ToInt32(targetHeightVar);
+            SixLabors.ImageSharp.Size targetSize = new SixLabors.ImageSharp.Size(targetWidth, targetHeight32);
             source.Mutate(x => x.Resize(targetSize));
             return source;
         }
-
     }
 }

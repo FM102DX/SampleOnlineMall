@@ -15,6 +15,7 @@ namespace SampleOnlineMall.Core.Mappers
             newItem.Id = item.Id;
             newItem.Name = item.Name;
             newItem.Description = item.Description;
+            newItem.Price = item.Price;
             return newItem;
         }
 
@@ -23,6 +24,7 @@ namespace SampleOnlineMall.Core.Mappers
             var newItem = new CommodityItemFrontend();
             newItem.Id = item.Id;
             newItem.Name = item.Name;
+            newItem.Price = item.Price;
             newItem.Description = item.Description;
             newItem.Pictures = new List<PictureInfo>();
             return newItem;
@@ -33,6 +35,7 @@ namespace SampleOnlineMall.Core.Mappers
             var newItem = new CommodityItemFrontendDisplayed();
             newItem.Id = item.Id;
             newItem.Name = item.Name;
+            newItem.Price= item.Price;
             newItem.Description = item.Description;
             newItem.Pictures = item.Pictures.ToList();
             return newItem;

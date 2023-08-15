@@ -367,7 +367,6 @@ function DeployAspNetCore60ApiSiteToUbuntuHost ([string] $remoteFolder, [string]
 
     LogAndOutput -text  "Given rights to $remoteFolder on remote host";
 
-
     # give execution rights to dll
     Invoke-Command -Session $deploySession -ScriptBlock  {  Invoke-Expression "chmod +X $($args[0])";} -ArgumentList $executingFileFullPath
     LogAndOutput -text  "Given execution rights to dll $executingFileFullPath";
@@ -580,6 +579,7 @@ function FeedAssortmentToMallAssortWebApi([string] $_transactionId)
         $jsonObj = ConvertTo-Json -InputObject $commItem -Depth 100 
         Log "Sending json obj"
         Log $jsonObj
+        "Sending object $($commItem.Name)"
         Invoke-RestMethod -Method 'Post' -Uri $controllerUrl02 -ContentType "application/json; charset=utf-8" -Body $jsonObj   
 
     }
@@ -654,6 +654,7 @@ function CreateAssortDbOnRemoteHost ([string] $_transactionId)
 
     Invoke-Command -Session $deploySession -ScriptBlock { Invoke-Expression "sudo -u postgres psql -c 'CREATE DATABASE Assortment'"; }
 
+    pause
 }
 
 function DeleteAssortDbOnRemoteHost ([string] $_transactionId)
@@ -667,6 +668,7 @@ function DeleteAssortDbOnRemoteHost ([string] $_transactionId)
 
     Invoke-Command -Session $deploySession -ScriptBlock { Invoke-Expression "sudo -u postgres psql -c 'DROP DATABASE Assortment'"; }
 
+    pause
 }
 
 function RemoveBinObjDirectoriesFromDirectoryRecursive([string] $dirName)
@@ -690,7 +692,7 @@ function CreateWebLoggerDbOnRemoteHost ([string] $_transactionId)
     
     LogAndOutput -text "Session opened successfully";
 
-    Invoke-Command -Session $deploySession -ScriptBlock { Invoke-Expression "sudo -u postgres psql -c 'CREATE DATABASE WebLogger'"; }
+    Invoke-Command -Session $deploySession -ScriptBlock { Invoke-Expression "sudo -u postgres psql -c 'CREATE DATABASE weblogger'"; }
 
 }
 
@@ -703,7 +705,7 @@ function DeleteWebLoggerDbOnRemoteHost ([string] $_transactionId)
 
     LogAndOutput -text "Session opened successfully";
 
-    Invoke-Command -Session $deploySession -ScriptBlock { Invoke-Expression "sudo -u postgres psql -c 'DROP DATABASE WebLogger'"; }
+    Invoke-Command -Session $deploySession -ScriptBlock { Invoke-Expression "sudo -u postgres psql -c 'DROP DATABASE weblogger'"; }
 }
 
 function CreateOpenSshSession()
@@ -762,6 +764,13 @@ function RunTransactionAndWait ([string] $_transactionId)
         return;
 }
 
+function DropThanCreateAssortDbAndFeelAssortment ([string] $_transactionId)
+{
+    RunTransactionAndWait -_transactionId "753101";
+    RunTransactionAndWait -_transactionId "750101";
+    RunTransactionAndWait -_transactionId "200101";
+    return;
+}
 function DeploySampleMallAssortWebApiWithAssortmentFill ([string] $_transactionId)
 {
     RunTransactionAndWait -_transactionId "201801";
@@ -769,6 +778,24 @@ function DeploySampleMallAssortWebApiWithAssortmentFill ([string] $_transactionI
     RunTransactionAndWait -_transactionId "200102";
     return;
 }
+
+function DeployAssortmentThanDropCreateDbThanFeedAssortment ([string] $_transactionId)
+{
+    RunTransactionAndWait -_transactionId "201801";
+    RunTransactionAndWait -_transactionId "753101";
+    RunTransactionAndWait -_transactionId "750101";
+    RunTransactionAndWait -_transactionId "200101";
+
+    return;
+}
+function DeployWebLoggerThanDelteAndCreateDb ([string] $_transactionId)
+{
+    RunTransactionAndWait -_transactionId "753102";
+    RunTransactionAndWait -_transactionId "750102";
+    RunTransactionAndWait -_transactionId "251801";
+    return;
+}
+
 
 #MENU
 function ExecMenuItem([string] $menuItem) {
@@ -790,16 +817,23 @@ function ExecMenuItem([string] $menuItem) {
 
     #20--MALL assortment
     elseif ($ex -eq "200000") { GetAssortmentStatus -_transactionId $ex}
-    elseif ($ex -eq "200102") { FeedAssortmentToMallAssortWebApi -_transactionId $ex}
+    elseif ($ex -eq "200101") { FeedAssortmentToMallAssortWebApi -_transactionId $ex}
     elseif ($ex -eq "203101") { DeleteAllAssortmentItems -_transactionId $ex}
     elseif ($ex -eq "201801") { DeploySampleMallAssortWebApi -_transactionId $ex}
-    elseif ($ex -eq "201802") { DeploySampleMallAssortWebApiWithAssortmentFill -_transactionId $ex}
+
+    
+    elseif ($ex -eq "207401") { CompletelyClearThanFeedMallAssort -_transactionId $ex}
+    elseif ($ex -eq "207402") { DropThanCreateAssortDbAndFeelAssortment -_transactionId $ex}
+    elseif ($ex -eq "207403") { DeploySampleMallAssortWebApiWithAssortmentFill -_transactionId $ex}
+    elseif ($ex -eq "207404") { DeployAssortmentThanDropCreateDbThanFeedAssortment -_transactionId $ex}
 
     #25--web logger
     elseif ($ex -eq "250000") { GetMessagesStatus -_transactionId $ex}
     elseif ($ex -eq "250101") { SendWebApiTestMessage -_transactionId $ex}
     elseif ($ex -eq "253101") { DeleteAllWebLoggerMessages -_transactionId $ex}
     elseif ($ex -eq "251801") { DeployWebLogger -_transactionId $ex}
+
+    elseif ($ex -eq "257401") { DeployWebLoggerThanDelteAndCreateDb -_transactionId $ex}
 
     #30--MALL blazor frontend
     elseif ($ex -eq "301801") { DeployMallBlazorFrontend  -_transactionId $ex}
@@ -815,7 +849,8 @@ function ExecMenuItem([string] $menuItem) {
     elseif ($ex -eq "300101") { FillClientsDb -_transactionId $ex}
     elseif ($ex -eq "900101") { RemoveBinObjFromMallBlazorFrontend }
 
-    elseif ($ex -eq "99") { $script:canExit = $true }
+    elseif ($ex -eq "99")     { $script:canExit = $true }
+
     else {
         "Wrong menu number, try again please";
     }
