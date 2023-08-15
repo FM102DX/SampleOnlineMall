@@ -66,6 +66,7 @@ namespace SampleOnlineMall.FrontEnd.Blazor
             _logger.Information("Blazor P3");
 
             var host = builder.Build();
+            
             await host.RunAsync();
         }
     }
