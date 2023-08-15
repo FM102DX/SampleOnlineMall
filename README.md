@@ -10,7 +10,7 @@ This is sample online mall made to test some web-technologies. They are:
 
 ## Parts of this mall are deployed to:
 
-https://mall.t109.tech - main frontand site 
+https://mall.t109.tech - main frontend site 
 
 https://mallassortapi01.t109.tech - assortment api with [swagger](https://mallassortapi01.t109.tech/swagger/index.html)
 
@@ -20,5 +20,5 @@ https://weblogger.t109.tech - web logger with [swagger](https://weblogger.t109.t
 + Assortment display (blazor frontend)
 + Assortment feed to api from local machine (powershell)
 + Web-logging
-
++ Environment management (powershell deploy asp.net services to ubuntu)
 
