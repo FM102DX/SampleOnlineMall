@@ -6,16 +6,12 @@ using System.Collections.Generic;
 
 namespace SampleOnlineMall.Core
 {
-    public class CommodityItemFrontendDisplayed : BaseEntity, IBaseEntity
+    public class CommodityItemFrontendDisplayed : CommodityItemBase
     {
         //mall commodityItem item that we show on site
         public CommodityItemFrontendDisplayed() : base()
         {
         }
-        public string Name { get; set; }
-        public int Price { get; set; }
-        public string? Description { get; set; }
-
         public PictureInfo FacePicture
         {
             get

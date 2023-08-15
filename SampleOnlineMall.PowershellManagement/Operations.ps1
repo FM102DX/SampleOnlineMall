@@ -839,12 +839,12 @@ function ExecMenuItem([string] $menuItem) {
     elseif ($ex -eq "301801") { DeployMallBlazorFrontend  -_transactionId $ex}
 
     #75--database management
-    elseif ($ex -eq "750000") { ViewPostgresDbsOnRemoteHost -_transactionId $ex}
-    elseif ($ex -eq "750101") { CreateAssortDbOnRemoteHost  -_transactionId $ex}
-    elseif ($ex -eq "753101") { DeleteAssortDbOnRemoteHost  -_transactionId $ex}
+    elseif ($ex -eq "750000") { ViewPostgresDbsOnRemoteHost -_transactionId $ex }
+    elseif ($ex -eq "750101") { CreateAssortDbOnRemoteHost  -_transactionId $ex }
+    elseif ($ex -eq "753101") { DeleteAssortDbOnRemoteHost  -_transactionId $ex }
 
-    elseif ($ex -eq "750102") { CreateWebLoggerDbOnRemoteHost -_transactionId $ex}
-    elseif ($ex -eq "753102") { DeleteWebLoggerDbOnRemoteHost -_transactionId $ex}
+    elseif ($ex -eq "750102") { CreateWebLoggerDbOnRemoteHost -_transactionId $ex }
+    elseif ($ex -eq "753102") { DeleteWebLoggerDbOnRemoteHost -_transactionId $ex }
 
     elseif ($ex -eq "300101") { FillClientsDb -_transactionId $ex}
     elseif ($ex -eq "900101") { RemoveBinObjFromMallBlazorFrontend }
