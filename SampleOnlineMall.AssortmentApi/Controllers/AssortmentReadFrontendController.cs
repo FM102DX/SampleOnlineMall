@@ -34,7 +34,7 @@ namespace SampleOnlineMall
         [Route("search/{searchText}")]
         public async Task<IEnumerable<CommodityItemFrontend>> SearchFrontednAssort(string searchText)
         {
-            throw new NotImplementedException();
+            return await _itemManager.Search(searchText.ToLower());
         }
 
         [HttpGet]

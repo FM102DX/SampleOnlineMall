@@ -76,10 +76,7 @@ namespace SampleOnlineMall
             builder.Services.AddSwaggerGen();
             _logger.Information("P2");
 
-            
-
             var app = builder.Build();
-            var wl = app.Services.GetRequiredService<WebLoggerManager>();
 
             // Configure the HTTP request pipeline.
 

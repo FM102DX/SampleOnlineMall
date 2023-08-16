@@ -85,7 +85,12 @@ namespace SampleOnlineMall.DataAccess.DataAccess
             return Task.FromResult(Data.Count);
         }
 
-        public Task<IEnumerable<T>> SearchAsync(string searchText)
+        public Task<IEnumerable<T>> SearchAsync(Expression<Func<T, bool>> filter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<T>> SearchAsync(string text)
         {
             throw new NotImplementedException();
         }

@@ -132,7 +132,13 @@ namespace SampleOnlineMall.DataAccess
             return Task.FromResult(_context.Set<T>().Count());
         }
 
-        public Task<IEnumerable<T>> SearchAsync(string searchText)
+        public Task<IEnumerable<T>> SearchAsync(Expression<Func<T, bool>> filter)
+        {
+            var rez = (IEnumerable<T>)(_context.Set<T>().Where(filter));
+            return Task.FromResult(rez);
+        }
+
+        public Task<IEnumerable<T>> SearchAsync(string text)
         {
             throw new NotImplementedException();
         }

@@ -74,5 +74,13 @@ namespace SampleOnlineMall.Core.Managers
             item.Supplier = await _supplierRepo.GetByIdOrNullAsync(item.SupplierId);
             return item;
         }
+
+        public async Task<List<CommodityItemFrontend>> Search(string text)
+        {
+            var rez = await _repo.SearchAsync(x => x.Name.ToLower().Contains(text) || (string.IsNullOrEmpty(x.Description) ? false : x.Description.ToLower().Contains(text)) );
+            var rezFront = rez.Select(x => _mapper.CommodityItemFrontendFromCommodityItem(x)).ToList();
+            return rezFront;
+        }
+
     }
 }
