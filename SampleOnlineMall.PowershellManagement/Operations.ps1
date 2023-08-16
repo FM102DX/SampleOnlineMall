@@ -577,6 +577,8 @@ function FeedAssortmentToMallAssortWebApi([string] $_transactionId)
             $bytesArr = [io.file]::ReadAllBytes($imagePath);
             $commItem.ThirdPic = [Convert]::ToBase64String($bytesArr);
         }
+        
+        $commItem.SupplierId = $marketplaceSuppliersGuid
 
         $jsonObj = ConvertTo-Json -InputObject $commItem -Depth 100 
         Log "Sending json obj"

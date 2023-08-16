@@ -16,6 +16,7 @@ namespace SampleOnlineMall.Core.Mappers
             newItem.Name = item.Name;
             newItem.Description = item.Description;
             newItem.Price = item.Price;
+            newItem.SupplierId = item.SupplierId;
             return newItem;
         }
 
@@ -27,6 +28,7 @@ namespace SampleOnlineMall.Core.Mappers
             newItem.Price = item.Price;
             newItem.Description = item.Description;
             newItem.Pictures = new List<PictureInfo>();
+            newItem.SupplierId = item.SupplierId;
             return newItem;
 
         }
@@ -38,6 +40,7 @@ namespace SampleOnlineMall.Core.Mappers
             newItem.Price= item.Price;
             newItem.Description = item.Description;
             newItem.Pictures = item.Pictures.ToList();
+            newItem.SupplierId = item.SupplierId;
             return newItem;
         }
 

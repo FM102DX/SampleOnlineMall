@@ -15,5 +15,6 @@ namespace SampleOnlineMall.Core
         {
             return $"{Id} {Name} ";
         }
+        public Guid SupplierId { get; set; }
     }
 }
