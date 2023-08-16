@@ -19,6 +19,6 @@ https://weblogger.t109.tech - web logger with [swagger](https://weblogger.t109.t
 ## Features for now
 + Assortment display (blazor frontend)
 + Assortment feed to api from local machine (powershell)
++ Search from frontend
 + Web-logging
 + Environment management (powershell deploy asp.net services to ubuntu)
-
