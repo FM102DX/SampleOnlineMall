@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SampleOnlineMall.Core;
+using SampleOnlineMall.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -37,10 +38,15 @@ namespace SampleOnlineMall.Core
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Name).HasMaxLength(250);
             });
+            modelBuilder.Entity<Supplier>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Name).HasMaxLength(250);
+            });
 
 
-          //  modelBuilder.Entity<Employee>();
-           // modelBuilder.Entity<Role>();
+            //  modelBuilder.Entity<Employee>();
+            // modelBuilder.Entity<Role>();
 
             base.OnModelCreating(modelBuilder);
         }

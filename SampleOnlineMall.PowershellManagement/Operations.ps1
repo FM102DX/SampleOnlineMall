@@ -47,6 +47,8 @@ $deployCreds1 = New-Object System.Management.Automation.PSCredential ($userName1
 [string] $credsFilePath = "C:\Develop\Deploy\Creds\Creds.txt";
 [string] $deployAddress01='';
 [string] $deployHost01='';
+[string] $marketplaceSuppliersGuidStr = "4b476692-0ec5-49aa-84ca-61a1f25d77c2";
+Try { $marketplaceSuppliersGuid = [System.Guid]::Parse($marketplaceSuppliersGuidStr) } Catch { $Result =  $Null } Finally { $Result }
 
 $menuContent = Get-content $menuFileFullPath
 
@@ -586,6 +588,39 @@ function FeedAssortmentToMallAssortWebApi([string] $_transactionId)
     pause
 }
 
+function GetSuppliersStatus ([string] $_transactionId)
+{
+    # Add-Type $source
+    $controllerUrl="https://mallassortapi01.t109.tech/Suppliers";
+    Invoke-RestMethod -Method 'Get' -Uri $controllerUrl -ContentType "application/json; charset=utf-8"
+    pause
+}
+function FeedSuppliersToWebApi([string] $_transactionId)
+{
+    if($callType -eq 'plain0')
+    {
+        # this is made to start transaction in a separate window
+        [string] $argList = "-file $scriptFileFullPath -transactionId $_transactionId -callType 'external-from-self' ";
+        Start-process -FilePath $pwshPath -ArgumentList $argList -PassThru;
+        return;
+    }
+    [string] $controllerUrl02 = "https://mallassortapi01.t109.tech/suppliers/insertitem";
+    Add-Type -Path $dllFullPath
+    $folders=Get-ChildItem $imagePath
+    $supplier = New-Object SampleOnlineMall.Core.Models.Supplier
+    $supplier.Id = $marketplaceSuppliersGuid;
+    $supplier.Name = 'Marketplace';
+    $jsonObj = ConvertTo-Json -InputObject $supplier -Depth 100 
+    Invoke-RestMethod -Method 'Post' -Uri $controllerUrl02 -ContentType "application/json; charset=utf-8" -Body $jsonObj
+    pause
+}
+function DeleteAllSuppliers ([string] $_transactionId)
+{
+    # Add-Type $source
+    $controllerUrl="https://mallassortapi01.t109.tech/Suppliers/deleteallitems";
+    Invoke-RestMethod -Method 'Delete' -Uri $controllerUrl -ContentType "application/json; charset=utf-8"
+}
+
 function GetMessagesStatus ([string] $_transactionId)
 {
     # Add-Type $source
@@ -797,6 +832,16 @@ function DeployWebLoggerThanDelteAndCreateDb ([string] $_transactionId)
 }
 
 
+
+function ClearTheModel ([string] $_transactionId)
+{
+    RunTransactionAndWait -_transactionId "203101"; # delete assort items
+
+    return;
+}
+
+
+
 #MENU
 function ExecMenuItem([string] $menuItem) {
 
@@ -821,7 +866,6 @@ function ExecMenuItem([string] $menuItem) {
     elseif ($ex -eq "203101") { DeleteAllAssortmentItems -_transactionId $ex}
     elseif ($ex -eq "201801") { DeploySampleMallAssortWebApi -_transactionId $ex}
 
-    
     elseif ($ex -eq "207401") { CompletelyClearThanFeedMallAssort -_transactionId $ex}
     elseif ($ex -eq "207402") { DropThanCreateAssortDbAndFeelAssortment -_transactionId $ex}
     elseif ($ex -eq "207403") { DeploySampleMallAssortWebApiWithAssortmentFill -_transactionId $ex}
@@ -834,6 +878,11 @@ function ExecMenuItem([string] $menuItem) {
     elseif ($ex -eq "251801") { DeployWebLogger -_transactionId $ex}
 
     elseif ($ex -eq "257401") { DeployWebLoggerThanDelteAndCreateDb -_transactionId $ex}
+
+    #27--Suppliers
+    elseif ($ex -eq "270000") { GetSuppliersStatus      -_transactionId $ex}
+    elseif ($ex -eq "270101") { FeedSuppliersToWebApi   -_transactionId $ex}
+    elseif ($ex -eq "273101") { DeleteAllSuppliers      -_transactionId $ex}
 
     #30--MALL blazor frontend
     elseif ($ex -eq "301801") { DeployMallBlazorFrontend  -_transactionId $ex}

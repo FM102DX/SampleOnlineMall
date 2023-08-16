@@ -3,6 +3,7 @@ using SampleOnlineMall.Core;
 using SampleOnlineMall.Core.Appilcation;
 using SampleOnlineMall.Core.Managers;
 using SampleOnlineMall.Core.Mappers;
+using SampleOnlineMall.Core.Models;
 using SampleOnlineMall.DataAccess;
 using SampleOnlineMall.DataAccess.Abstract;
 using SampleOnlineMall.DataAccess.DataAccess;
@@ -55,8 +56,11 @@ namespace SampleOnlineMall
             builder.Services.AddSingleton(typeof(SampleOnlineMallAssortmentApiApp), (x) => _app);
             builder.Services.AddScoped(typeof(CommodityItemManager));
             builder.Services.AddScoped(typeof(CommodityItemFrontendManager));
+            builder.Services.AddScoped(typeof(SupplierManager));
             builder.Services.AddSingleton(typeof(Serilog.ILogger), (x) => _logger);
             builder.Services.AddScoped(typeof(IAsyncRepository<CommodityItem>), typeof(EfAsyncRepository<CommodityItem>));
+            builder.Services.AddScoped(typeof(IAsyncRepository<Supplier>), typeof(EfAsyncRepository<Supplier>));
+
             builder.Services.AddScoped<Mapper>();
             builder.Services.AddScoped(typeof(WebLoggerManager), (x) => new WebLoggerManager("assortment", loggerOptions));
 
@@ -72,7 +76,10 @@ namespace SampleOnlineMall
             builder.Services.AddSwaggerGen();
             _logger.Information("P2");
 
+            
+
             var app = builder.Build();
+            var wl = app.Services.GetRequiredService<WebLoggerManager>();
 
             // Configure the HTTP request pipeline.
 
