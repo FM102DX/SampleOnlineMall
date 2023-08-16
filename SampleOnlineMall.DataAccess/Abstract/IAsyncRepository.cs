@@ -19,7 +19,8 @@ namespace SampleOnlineMall.DataAccess.Abstract
 
         public Task<CommonOperationResult> AddAsync(T t);
 
-        public Task<IEnumerable<T>> SearchAsync(string searchText);
+        public Task<IEnumerable<T>> SearchAsync(Expression<Func<T, bool>> filter);
+        public Task<IEnumerable<T>> SearchAsync(string text);
 
         public Task<CommonOperationResult> UpdateAsync(T t);
 

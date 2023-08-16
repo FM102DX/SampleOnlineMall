@@ -68,7 +68,7 @@ namespace SampleOnlineMall.DataAccess.DataAccess
             {
                 _logger.Information($"This is WebApiAsyncRepository.search searchText={searchText}");
                 
-                _logger.Information($"Sending reqyest to {httpClient.BaseAddress}");
+                _logger.Information($"Sending request to {httpClient.BaseAddress}");
 
                 var response = await httpClient.GetAsync($"{_options.SearchHostPath}/{searchText}");
                 
@@ -242,6 +242,11 @@ namespace SampleOnlineMall.DataAccess.DataAccess
         }
 
         public Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> filter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<T>> SearchAsync(Expression<Func<T, bool>> filter)
         {
             throw new NotImplementedException();
         }

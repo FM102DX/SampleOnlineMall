@@ -23,13 +23,16 @@ namespace SampleOnlineMall.Core.Managers
         private SampleOnlineMallAssortmentApiApp _app;
         private WebLoggerManager _webLogMgr;
         private Mapper _mapper;
-        public CommodityItemFrontendManager(IAsyncRepository<CommodityItem> repo, Serilog.ILogger logger, SampleOnlineMallAssortmentApiApp app, Mapper mapper, WebLoggerManager webLogMgr)
+        private IAsyncRepository<Supplier> _supplierRepo;
+
+        public CommodityItemFrontendManager(IAsyncRepository<CommodityItem> repo, IAsyncRepository<Supplier> supplierRepo,  Serilog.ILogger logger, SampleOnlineMallAssortmentApiApp app, Mapper mapper, WebLoggerManager webLogMgr)
         {
             _repo = repo;
             _logger = logger;
             _app = app;
             _mapper = mapper;
             _webLogMgr = webLogMgr;
+            _supplierRepo = supplierRepo;
         }
 
         public async Task<IEnumerable<CommodityItemFrontend>> GetAll()
@@ -40,6 +43,7 @@ namespace SampleOnlineMall.Core.Managers
                 var x = GetPictureInfoListForItem(item);
                 item.Pictures = x;
             }
+            
             _webLogMgr.Log($"{items[0].Pictures.Count()}");
             return items;
         }
@@ -67,7 +71,16 @@ namespace SampleOnlineMall.Core.Managers
         {
             var item = _mapper.CommodityItemFrontendFromCommodityItem(await _repo.GetByIdOrNullAsync(id));
             item.Pictures = GetPictureInfoListForItem(item);
+            item.Supplier = await _supplierRepo.GetByIdOrNullAsync(item.SupplierId);
             return item;
         }
+
+        public async Task<List<CommodityItemFrontend>> Search(string text)
+        {
+            var rez = await _repo.SearchAsync(x => x.Name.ToLower().Contains(text) || (string.IsNullOrEmpty(x.Description) ? false : x.Description.ToLower().Contains(text)) );
+            var rezFront = rez.Select(x => _mapper.CommodityItemFrontendFromCommodityItem(x)).ToList();
+            return rezFront;
+        }
+
     }
 }

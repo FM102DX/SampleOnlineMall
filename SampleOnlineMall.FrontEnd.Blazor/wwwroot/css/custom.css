@@ -49,10 +49,11 @@ div {
     }
 
     div.ShopItemCollection {
-        min-height: 1450px;
         margin-top: 30px;
+        display: table-cell;
+        height: auto;
+        overflow: hidden;
     }
-
 
     div.bottombar {
         height: 30px;
@@ -254,9 +255,10 @@ button#MainSearchButton {
 
 /*  ***********  SHOP ITEM PAGE ***************/
 div.shopitem-detail-page {
-    min-height: 1450px;
     margin-top: 30px;
-    
+    display: table-cell;
+    height: auto;
+    overflow: hidden;
 }
 
 div.shopitem-block
