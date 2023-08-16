@@ -30,6 +30,15 @@ namespace SampleOnlineMall.FrontEnd.Blazor.Pages
         [Parameter]
         public Guid ItemId { get; set; }
 
+        public string ActualItemSupplierName
+        {
+            get
+            {
+                if (ActualItem.Supplier == null) return "Marketplace";
+                return ActualItem.Supplier.Name;
+            }
+        }
+
         public List<SelectableImage> ImgList { get; set; }= new List<SelectableImage>();
 
         public CommodityItemFrontendDisplayed ActualItem { get; set; } = new CommodityItemFrontendDisplayed();

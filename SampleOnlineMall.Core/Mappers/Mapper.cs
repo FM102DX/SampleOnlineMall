@@ -41,6 +41,7 @@ namespace SampleOnlineMall.Core.Mappers
             newItem.Description = item.Description;
             newItem.Pictures = item.Pictures.ToList();
             newItem.SupplierId = item.SupplierId;
+            newItem.Supplier = item.Supplier;
             return newItem;
         }
 

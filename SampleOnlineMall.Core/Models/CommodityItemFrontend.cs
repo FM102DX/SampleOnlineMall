@@ -14,5 +14,7 @@ namespace SampleOnlineMall.Core
 
         public IEnumerable<PictureInfo> Pictures { get; set; }
 
+        public Supplier Supplier { get; set; }
+
     }
 }

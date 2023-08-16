@@ -12,6 +12,7 @@ namespace SampleOnlineMall.Core
         public CommodityItemFrontendDisplayed() : base()
         {
         }
+
         public PictureInfo FacePicture
         {
             get
@@ -26,5 +27,6 @@ namespace SampleOnlineMall.Core
 
         public List<PictureInfo> Pictures { get; set; }
 
+        public Supplier Supplier { get; set; }
     }
 }
