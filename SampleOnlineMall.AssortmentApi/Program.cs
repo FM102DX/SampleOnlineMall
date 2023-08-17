@@ -58,8 +58,8 @@ namespace SampleOnlineMall
             builder.Services.AddScoped(typeof(CommodityItemFrontendManager));
             builder.Services.AddScoped(typeof(SupplierManager));
             builder.Services.AddSingleton(typeof(Serilog.ILogger), (x) => _logger);
-            builder.Services.AddScoped(typeof(IAsyncRepository<CommodityItem>), typeof(EfAsyncRepository<CommodityItem>));
-            builder.Services.AddScoped(typeof(IAsyncRepository<Supplier>), typeof(EfAsyncRepository<Supplier>));
+            builder.Services.AddScoped(typeof(IAsyncRepositoryT<CommodityItem>), typeof(EfAsyncRepository<CommodityItem>));
+            builder.Services.AddScoped(typeof(IAsyncRepositoryT<Supplier>), typeof(EfAsyncRepository<Supplier>));
 
             builder.Services.AddScoped<Mapper>();
             builder.Services.AddScoped(typeof(WebLoggerManager), (x) => new WebLoggerManager("assortment", loggerOptions));

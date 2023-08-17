@@ -18,14 +18,14 @@ namespace SampleOnlineMall.Core.Managers
     //used to show items in frontend
     public class CommodityItemFrontendManager
     {
-        private IAsyncRepository<CommodityItem> _repo;
+        private IAsyncRepositoryT<CommodityItem> _repo;
         private Serilog.ILogger _logger;
         private SampleOnlineMallAssortmentApiApp _app;
         private WebLoggerManager _webLogMgr;
         private Mapper _mapper;
-        private IAsyncRepository<Supplier> _supplierRepo;
+        private IAsyncRepositoryT<Supplier> _supplierRepo;
 
-        public CommodityItemFrontendManager(IAsyncRepository<CommodityItem> repo, IAsyncRepository<Supplier> supplierRepo,  Serilog.ILogger logger, SampleOnlineMallAssortmentApiApp app, Mapper mapper, WebLoggerManager webLogMgr)
+        public CommodityItemFrontendManager(IAsyncRepositoryT<CommodityItem> repo, IAsyncRepositoryT<Supplier> supplierRepo,  Serilog.ILogger logger, SampleOnlineMallAssortmentApiApp app, Mapper mapper, WebLoggerManager webLogMgr)
         {
             _repo = repo;
             _logger = logger;
@@ -44,6 +44,19 @@ namespace SampleOnlineMall.Core.Managers
                 item.Pictures = x;
             }
             
+            _webLogMgr.Log($"{items[0].Pictures.Count()}");
+            return items;
+        }
+
+        public async Task<IEnumerable<CommodityItemFrontend>> GetPage(int pageNo)
+        {
+            var items = (await _repo.GetPageAsync(pageNo, 9)).Select(x => _mapper.CommodityItemFrontendFromCommodityItem(x)).ToList();
+            foreach (var item in items)
+            {
+                var x = GetPictureInfoListForItem(item);
+                item.Pictures = x;
+            }
+
             _webLogMgr.Log($"{items[0].Pictures.Count()}");
             return items;
         }

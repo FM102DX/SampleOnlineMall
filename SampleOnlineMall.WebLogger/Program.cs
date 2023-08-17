@@ -49,7 +49,7 @@ namespace SampleOnlineMall.WebLogger
             builder.Services.AddSingleton(typeof(SampleOnlineMallWebLoggerApp), (x) => _app);
             builder.Services.AddScoped(typeof(WebLoggerMessageManager));
             builder.Services.AddSingleton(typeof(Serilog.ILogger), (x) => _logger);
-            builder.Services.AddScoped(typeof(IAsyncRepository<WebLoggerMessage>), typeof(EfAsyncRepository<WebLoggerMessage>));
+            builder.Services.AddScoped(typeof(IAsyncRepositoryT<WebLoggerMessage>), typeof(EfAsyncRepository<WebLoggerMessage>));
 
             builder.Services.AddCors(confg =>
                 confg.AddPolicy("AllowAll",

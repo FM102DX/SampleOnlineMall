@@ -13,10 +13,11 @@ using SampleOnlineMall.DataAccess.Abstract;
 using SampleOnlineMall.DataAccess.Models;
 using SampleOnlineMall.Service;
 using System.Linq.Expressions;
+using System.Net.Mime;
 
 namespace SampleOnlineMall.DataAccess.DataAccess
 {
-    public class WebApiAsyncRepository<T> : IAsyncRepository<T> where T : BaseEntity
+    public class WebApiAsyncRepository<T> : IAsyncRepositoryT<T> where T : BaseEntity
     {
         //GenericRepository на webApi
 
@@ -99,6 +100,41 @@ namespace SampleOnlineMall.DataAccess.DataAccess
             try
             {
                 var response = await httpClient.GetAsync($"{_options.GetAllHostPath}");
+
+                var json = await response.Content.ReadAsStringAsync();
+                
+                switch (response.StatusCode)
+                {
+                    case System.Net.HttpStatusCode.OK:
+                        items = JsonConvert.DeserializeObject<IEnumerable<T>>(json);
+                        break;
+                    default:
+                        throw new Exception();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message);
+            }
+            return items;
+        }
+        
+        public async Task<IEnumerable<T>> GetPageAsync(int pageNo, int itemsPerPage)
+        {
+            var requestData = new ClientToApiPaginatedRequest() { Page = pageNo, ItemsPerPage = itemsPerPage };
+
+            IEnumerable<T> items = new List<T>();
+
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri($"{_options.GetPageHostPath}"),
+                Content = new StringContent("your json", Encoding.UTF8)
+            };
+
+            try
+            {
+                var response = await httpClient.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 switch (response.StatusCode)
                 {
@@ -115,6 +151,12 @@ namespace SampleOnlineMall.DataAccess.DataAccess
             }
             return items;
         }
+
+        public async Task<IEnumerable<T>> GetPageAsync(Expression<Func<T, bool>> filter, int pageNo, int elementsPerPage)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<T> GetByIdOrNullAsync(Guid id)
         {
             T item = null;
@@ -250,5 +292,7 @@ namespace SampleOnlineMall.DataAccess.DataAccess
         {
             throw new NotImplementedException();
         }
+
+
     }
 }

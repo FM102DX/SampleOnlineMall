@@ -11,7 +11,7 @@ using System.Linq.Expressions;
 
 namespace SampleOnlineMall.DataAccess
 {
-    public class EfAsyncRepository<T> : IAsyncRepository<T> where T: BaseEntity
+    public class EfAsyncRepository<T> : IAsyncRepositoryT<T> where T: BaseEntity
     {
         
         private DbContext _context;
@@ -43,6 +43,46 @@ namespace SampleOnlineMall.DataAccess
             try
             {
                 var rez = Task.FromResult((IEnumerable<T>)_context.Set<T>().Where(filter).AsNoTracking());
+                return rez;
+            }
+            catch (Exception ex)
+            {
+                List<T> lst = new List<T>();
+                IEnumerable<T> en = (IEnumerable<T>)lst;
+                return Task.FromResult(en);
+            }
+        }
+
+        public Task<IEnumerable<T>> GetPageAsync(int pageNo, int elementsPerPage)
+        {
+            try
+            {
+                var skipCount=(pageNo-1)*elementsPerPage;
+                if (skipCount<0)
+                {
+                    skipCount = 0;
+                }
+                var rez = Task.FromResult((IEnumerable<T>)_context.Set<T>().Skip(skipCount).Take(elementsPerPage).AsNoTracking());
+                return rez;
+            }
+            catch (Exception ex)
+            {
+                List<T> lst = new List<T>();
+                IEnumerable<T> en = (IEnumerable<T>)lst;
+                return Task.FromResult(en);
+            }
+        }
+
+        public Task<IEnumerable<T>> GetPageAsync(Expression<Func<T, bool>> filter, int pageNo, int elementsPerPage)
+        {
+            try
+            {
+                var skipCount = (pageNo - 1) * elementsPerPage;
+                if (skipCount < 0)
+                {
+                    skipCount = 0;
+                }
+                var rez = Task.FromResult((IEnumerable<T>)_context.Set<T>().Where(filter).Skip(skipCount).Take(elementsPerPage).AsNoTracking());
                 return rez;
             }
             catch (Exception ex)
@@ -142,5 +182,7 @@ namespace SampleOnlineMall.DataAccess
         {
             throw new NotImplementedException();
         }
+
+
     }
 }

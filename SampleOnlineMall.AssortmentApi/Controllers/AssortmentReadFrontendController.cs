@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SampleOnlineMall.Core;
 using SampleOnlineMall.Core.Managers;
+using SampleOnlineMall.Core.Models;
+using SampleOnlineMall.DataAccess.Models;
 using SampleOnlineMall.Service;
 using System;
 using System.Collections.Generic;
@@ -25,9 +27,24 @@ namespace SampleOnlineMall
 
         [HttpGet]
         [Route("getall/")]
-        public async Task<IEnumerable<CommodityItemFrontend>> GetAllItems()
+        public async Task<IRepositoryResponceT<CommodityItemFrontend>> GetAllItems()
         {
-            return await _itemManager.GetAll();
+            var responce = new IRepositoryResponceT<CommodityItemFrontend>();
+            responce.TotlaCount = await _itemManager.Count();
+            responce.Items= await _itemManager.GetAll();
+            return responce;
+        }
+        [HttpGet]
+        [Route("getpage/")]
+        public async Task<IRepositoryResponceT<CommodityItemFrontend>> GetPage(ClientToApiPaginatedRequest request)
+        {
+
+            var responce = new IRepositoryResponceT<CommodityItemFrontend>();
+            responce.TotlaCount = await _itemManager.Count();
+            
+            responce.Items = await _itemManager.GetAll();
+            
+            return responce;
         }
 
         [HttpGet]

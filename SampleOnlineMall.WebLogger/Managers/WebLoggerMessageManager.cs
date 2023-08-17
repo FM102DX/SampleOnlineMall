@@ -13,10 +13,10 @@ namespace SampleOnlineMall.Core.Managers
 {
     public class WebLoggerMessageManager
     {
-        private IAsyncRepository<WebLoggerMessage> _repo;
+        private IAsyncRepositoryT<WebLoggerMessage> _repo;
         private Serilog.ILogger _logger;
         private SampleOnlineMallWebLoggerApp _app;
-        public WebLoggerMessageManager(IAsyncRepository<WebLoggerMessage> repo, Serilog.ILogger logger, SampleOnlineMallWebLoggerApp app)
+        public WebLoggerMessageManager(IAsyncRepositoryT<WebLoggerMessage> repo, Serilog.ILogger logger, SampleOnlineMallWebLoggerApp app)
         {
             _repo = repo;
             _logger = logger;

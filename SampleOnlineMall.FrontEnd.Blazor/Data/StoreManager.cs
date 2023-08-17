@@ -11,7 +11,7 @@ namespace SampleOnlineMall.FrontEnd.Blazor.Data
 {
     public class StoreManager
     {
-        private IAsyncRepository<CommodityItemFrontend> _repo { get; set; }
+        private IAsyncRepositoryT<CommodityItemFrontend> _repo { get; set; }
 
         private SampleOnlineMallFrontEndBlazorApp _app { get; set; }
         
@@ -19,7 +19,7 @@ namespace SampleOnlineMall.FrontEnd.Blazor.Data
 
         public string StoreBaseUrl { get; set; }
 
-        public StoreManager(NavigationManager Navi, IAsyncRepository<CommodityItemFrontend> repo, SampleOnlineMallFrontEndBlazorApp app, Mapper mapper)
+        public StoreManager(NavigationManager Navi, IAsyncRepositoryT<CommodityItemFrontend> repo, SampleOnlineMallFrontEndBlazorApp app, Mapper mapper)
         {
             StoreBaseUrl = Navi.BaseUri;
             _repo = repo;
