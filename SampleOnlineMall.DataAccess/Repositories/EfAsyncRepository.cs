@@ -11,11 +11,10 @@ using System.Linq.Expressions;
 
 namespace SampleOnlineMall.DataAccess
 {
-    public class EfAsyncRepository<T> : IAsyncRepositoryT<T> where T: BaseEntity
+    public class EfAsyncRepository<T> : IAsyncRepository<T> where T: BaseEntity
     {
-        
-        private DbContext _context;
-        Serilog.ILogger _logger;
+        private DbContext           _context;
+        private Serilog.ILogger     _logger;
 
         public EfAsyncRepository(DbContext context, Serilog.ILogger logger)
         {
@@ -23,6 +22,7 @@ namespace SampleOnlineMall.DataAccess
             _logger = logger;
         }
 
+        //GetAll
         public Task<IEnumerable<T>> GetAllAsync()
         {
             try
@@ -38,61 +38,77 @@ namespace SampleOnlineMall.DataAccess
             }
         }
 
+        public Task<IRepositoryResponce<T>> GetAllAsync(IRepositoryRequest<T> request)
+        {
+            int totalCount = GetCountAsync().Result;
+
+            IRepositoryResponce<T> responce = new RepositoryResponce<T>()
+            {
+                UsedPagination = request.UsePagination,
+                UsedSearch = request.SearchOptions.UseSearch
+            };
+
+            try
+            {
+                if(request.UsePagination && request.SearchOptions.UseSearch)
+                {
+                    var rez = Task.FromResult((IEnumerable<T>)_context
+                                    .Set<T>()
+                                    .Where(request.SearchOptions.Filter)
+                                    .Skip(request.ItemsPerPage * (request.Page - 1))
+                                    .Take(request.ItemsPerPage).AsNoTracking());
+                    responce.Page = request.Page;
+                    responce.ItemsPerPage = request.ItemsPerPage;
+                    responce.TotlaCount = totalCount;
+                    responce.Items = rez.Result;
+                }
+                else if (!request.UsePagination && request.SearchOptions.UseSearch)
+                {
+                    var rez = Task.FromResult((IEnumerable<T>)_context
+                                    .Set<T>()
+                                    .Where(request.SearchOptions.Filter)
+                                    .AsNoTracking());
+                }
+                else if (request.UsePagination && !request.SearchOptions.UseSearch)
+                {
+                    var rez = Task.FromResult((IEnumerable<T>)_context
+                                        .Set<T>()
+                                        .Skip(request.ItemsPerPage * (request.Page-1))
+                                        .Take(request.ItemsPerPage)
+                                        .AsNoTracking());
+                    responce.Page = request.Page;
+                    responce.ItemsPerPage = request.ItemsPerPage;
+                    responce.TotlaCount = totalCount;
+
+                }
+                else if (!request.UsePagination && !request.SearchOptions.UseSearch)
+                {
+                    var rez = Task.FromResult((IEnumerable<T>)_context.Set<T>().AsNoTracking());
+                    
+                    responce = new RepositoryResponce<T>()
+                    {
+                        UsedPagination = request.UsePagination,
+                        UsedSearch = request.SearchOptions.UseSearch
+                    };
+                }
+                responce.Result = CommonOperationResult.SayOk();
+            }
+            catch (Exception ex)
+            {
+                responce.Result = CommonOperationResult.SayFail();
+                responce.Items = new List<T>();
+            }
+            return Task.FromResult(responce);
+        }
         public Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> filter)
         {
-            try
-            {
-                var rez = Task.FromResult((IEnumerable<T>)_context.Set<T>().Where(filter).AsNoTracking());
-                return rez;
-            }
-            catch (Exception ex)
-            {
-                List<T> lst = new List<T>();
-                IEnumerable<T> en = (IEnumerable<T>)lst;
-                return Task.FromResult(en);
-            }
+            IRepositoryRequest<T> request = new RepositoryRequest<T>();
+            request.UsePagination = false;
+            request.SearchOptions.UseSearch = true;
+            request.SearchOptions.Filter = filter;
+            var getAll = GetAllAsync(request).Result;
+            return Task.FromResult(getAll.Items);
         }
-
-        public Task<IEnumerable<T>> GetPageAsync(int pageNo, int elementsPerPage)
-        {
-            try
-            {
-                var skipCount=(pageNo-1)*elementsPerPage;
-                if (skipCount<0)
-                {
-                    skipCount = 0;
-                }
-                var rez = Task.FromResult((IEnumerable<T>)_context.Set<T>().Skip(skipCount).Take(elementsPerPage).AsNoTracking());
-                return rez;
-            }
-            catch (Exception ex)
-            {
-                List<T> lst = new List<T>();
-                IEnumerable<T> en = (IEnumerable<T>)lst;
-                return Task.FromResult(en);
-            }
-        }
-
-        public Task<IEnumerable<T>> GetPageAsync(Expression<Func<T, bool>> filter, int pageNo, int elementsPerPage)
-        {
-            try
-            {
-                var skipCount = (pageNo - 1) * elementsPerPage;
-                if (skipCount < 0)
-                {
-                    skipCount = 0;
-                }
-                var rez = Task.FromResult((IEnumerable<T>)_context.Set<T>().Where(filter).Skip(skipCount).Take(elementsPerPage).AsNoTracking());
-                return rez;
-            }
-            catch (Exception ex)
-            {
-                List<T> lst = new List<T>();
-                IEnumerable<T> en = (IEnumerable<T>)lst;
-                return Task.FromResult(en);
-            }
-        }
-
         public Task<T> GetByIdOrNullAsync(Guid id)
         {
             return _context.Set<T>().SingleOrDefaultAsync(e => e.Id == id);
@@ -182,7 +198,6 @@ namespace SampleOnlineMall.DataAccess
         {
             throw new NotImplementedException();
         }
-
 
     }
 }

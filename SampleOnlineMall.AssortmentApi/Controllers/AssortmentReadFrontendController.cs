@@ -2,6 +2,7 @@
 using SampleOnlineMall.Core;
 using SampleOnlineMall.Core.Managers;
 using SampleOnlineMall.Core.Models;
+using SampleOnlineMall.DataAccess.Abstract;
 using SampleOnlineMall.DataAccess.Models;
 using SampleOnlineMall.Service;
 using System;
@@ -27,19 +28,19 @@ namespace SampleOnlineMall
 
         [HttpGet]
         [Route("getall/")]
-        public async Task<IRepositoryResponceT<CommodityItemFrontend>> GetAllItems()
+        public async Task<IRepositoryResponce<CommodityItemFrontend>> GetAllItems()
         {
-            var responce = new IRepositoryResponceT<CommodityItemFrontend>();
+            var responce = new IRepositoryResponce<CommodityItemFrontend>();
             responce.TotlaCount = await _itemManager.Count();
             responce.Items= await _itemManager.GetAll();
             return responce;
         }
         [HttpGet]
         [Route("getpage/")]
-        public async Task<IRepositoryResponceT<CommodityItemFrontend>> GetPage(ClientToApiPaginatedRequest request)
+        public async Task<IRepositoryResponce<CommodityItemFrontend>> GetPage(ClientToApiPaginatedRequest request)
         {
 
-            var responce = new IRepositoryResponceT<CommodityItemFrontend>();
+            var responce = new RepositoryResponce<CommodityItemFrontend>();
             responce.TotlaCount = await _itemManager.Count();
             
             responce.Items = await _itemManager.GetAll();

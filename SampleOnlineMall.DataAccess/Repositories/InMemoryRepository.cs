@@ -7,7 +7,7 @@ using SampleOnlineMall.Service;
 
 namespace SampleOnlineMall.DataAccess
 {
-    public class InMemoryRepository<T> : IRepositoryT<T> where T :IBaseEntity, new ()
+    public class InMemoryRepository<T> : IRepository<T> where T :IBaseEntity, new ()
     {
         public List<T> Data { get; set; } = new List<T>();
 
