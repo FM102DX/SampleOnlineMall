@@ -14,5 +14,9 @@
 
         public delegate void DoingSearchHandler(string SearchText);
 
+        public delegate void PaginatorSelectionChangedHandler(int selectedPage);
+        
+        public event PaginatorSelectionChangedHandler PaginatorSelectionChanged;
+
     }
 }

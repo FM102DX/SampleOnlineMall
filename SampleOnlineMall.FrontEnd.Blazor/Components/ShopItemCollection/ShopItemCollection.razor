@@ -25,34 +25,18 @@
         }
     }
         
-        <div class="goodsRowBegin skuUnitBase" />
-
         @foreach(var sku in ItemsDisplayed)
         {
-           
-            
-            @if (stepCount==step)
-            {
-                <div class="goodsRowEnd skuUnitBase" /><div class="goodsRowBegin skuUnitBase" />
-                stepCount = 0;
-            }
-        
             <div class="SkuCard skuUnitBase" id="@counter">
 
                 <div class="SkuCard-image SkuCard-element">
                     <img class="SkuCardPic" src="@sku.FacePicture.MediumPictureFullPath" />
                 </div>
-
                 <div class="SkuCard-productName SkuCard-element">
                     <a href="@Manager.GetItemPageFullAddress(@sku.Id)">
                        @sku.Name
                    </a>
                 </div>
-
-                <div class="SkuCard-productPrice SkuCard-element">
-                    
-                 </div>
-
             </div>
 
             counter++;
@@ -62,6 +46,5 @@
         }
 
         <div class="PaginationControlSeparator"></div>
-        
-        <div class="PaginationControl"></div>
+
 </div>

@@ -21,11 +21,11 @@ namespace SampleOnlineMall.FrontEnd.Blazor.Components.DisplayImageWithSelector
         public SelectorPositionEnum SelectorPosition { get; set; }=SelectorPositionEnum.bottom;
 
         [Parameter]
-        public List<SelectableImage> ImgList { get; set; }=new List<SelectableImage>();
+        public List<Paginator> ImgList { get; set; }=new List<Paginator>();
 
         private bool IsVerticalOrder=> SelectorPosition==SelectorPositionEnum.bottom;
         public int SelectorToImageRatioPercent { get; set; } = 20;
-        public SelectableImage CurrentImage { get; set; }=new SelectableImage();
+        public Paginator CurrentImage { get; set; }=new Paginator();
         public int SelectorHeight
         {
             get
@@ -123,7 +123,7 @@ namespace SampleOnlineMall.FrontEnd.Blazor.Components.DisplayImageWithSelector
             
         }
 
-        public void SelectionChanged(SelectableImage img)
+        public void SelectionChanged(Paginator img)
         {
             CurrentImage = img;
             Logger.Information($"DisplayImageWithSelector: Selection changed, new id={img.Id}");

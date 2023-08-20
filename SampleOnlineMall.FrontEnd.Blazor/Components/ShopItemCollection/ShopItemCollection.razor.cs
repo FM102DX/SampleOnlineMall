@@ -34,7 +34,14 @@ namespace SampleOnlineMall.FrontEnd.Blazor.Components.ShopItemCollection
         protected override void OnInitialized()
         {
             CompHub.DoingSearch += CompHub_DoingSearch;
+            CompHub.PaginatorSelectionChanged += CompHub_PaginatorSelectionChanged;
         }
+
+        private void CompHub_PaginatorSelectionChanged(int selectedPage)
+        {
+            
+        }
+
         protected override async Task OnInitializedAsync()
         {
              await DoPageLoad();
