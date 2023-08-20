@@ -1,4 +1,6 @@
 ﻿using SampleOnlineMall.Core.Models;
+using SampleOnlineMall.DataAccess.Abstract;
+using SampleOnlineMall.DataAccess.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +30,7 @@ namespace SampleOnlineMall.Core.Mappers
             newItem.Price = item.Price;
             newItem.Description = item.Description;
             newItem.Pictures = new List<PictureInfo>();
+
             newItem.SupplierId = item.SupplierId;
             return newItem;
 
@@ -39,13 +42,53 @@ namespace SampleOnlineMall.Core.Mappers
             newItem.Name = item.Name;
             newItem.Price= item.Price;
             newItem.Description = item.Description;
-            newItem.Pictures = item.Pictures.ToList();
+            newItem.Pictures = new List<PictureInfo>();
+            foreach (var x in item.Pictures)
+            {
+                newItem.Pictures.Add(x.Clone());
+            }
             newItem.SupplierId = item.SupplierId;
             newItem.Supplier = item.Supplier;
             return newItem;
         }
 
+        public RepositoryResponce<CommodityItemFrontend> ResponceFrontFromResponceCommItem(RepositoryResponce<CommodityItem> sourceResp)
+        {
+            var targetResp = new RepositoryResponce<CommodityItemFrontend>();
+            targetResp.ItemsPerPage = sourceResp.ItemsPerPage;
+            targetResp.UsedSearch = sourceResp.UsedSearch;
+            targetResp.Page = sourceResp.Page;
+            targetResp.Result = new Service.CommonOperationResult();
+            targetResp.Result.Success = sourceResp.Result.Success;
+            targetResp.Result.Message = sourceResp.Result.Message;
+            var itemList = new List<CommodityItemFrontend>();
 
-        
+            foreach (var item in sourceResp.Items)
+            {
+                itemList.Add(CommodityItemFrontendFromCommodityItem(item));
+            }
+            targetResp.Items = itemList;
+            return targetResp;
+        }
+        public RepositoryResponce<CommodityItemFrontendDisplayed> ResponceFrontDisplayedFromTransport(RepositoryResponce<CommodityItemFrontend> sourceResp)
+        {
+            var targetResp = new RepositoryResponce<CommodityItemFrontendDisplayed>();
+            targetResp.ItemsPerPage = sourceResp.ItemsPerPage;
+            targetResp.UsedSearch = sourceResp.UsedSearch;
+            targetResp.Page = sourceResp.Page;
+            targetResp.Result = new Service.CommonOperationResult();
+            targetResp.Result.Success = sourceResp.Result.Success;
+            targetResp.Result.Message = sourceResp.Result.Message;
+            var itemList = new List<CommodityItemFrontendDisplayed>();
+
+            foreach (var item in sourceResp.Items)
+            {
+                itemList.Add(CommodityItemFrontendDisplayedFromTransport(item));
+            }
+            targetResp.Items = itemList;
+            return targetResp;
+        }
+
+
     }
 }

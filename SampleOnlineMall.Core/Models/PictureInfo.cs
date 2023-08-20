@@ -12,5 +12,13 @@ namespace SampleOnlineMall.Core.Models
         public string MediumPictureFullPath { get; set; }
         public string SmallPictureFullPath { get; set; }
 
+        public PictureInfo Clone()
+        {
+            PictureInfo pictureInfo = new PictureInfo();
+            pictureInfo.BigPictureFullPath = BigPictureFullPath;
+            pictureInfo.MediumPictureFullPath = MediumPictureFullPath;
+            pictureInfo.SmallPictureFullPath= SmallPictureFullPath;
+            return pictureInfo;
+        }
     }
 }

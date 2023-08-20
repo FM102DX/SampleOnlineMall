@@ -12,20 +12,22 @@ using Shim= SixLabors.ImageSharp.Image;
 using SixLabors.ImageSharp.Formats;
 using SampleOnlineMall.Core.Mappers;
 using SampleOnlineMall.Core.Models;
+using SampleOnlineMall.DataAccess.Models;
+using Newtonsoft.Json;
 
 namespace SampleOnlineMall.Core.Managers
 {
     //used to show items in frontend
     public class CommodityItemFrontendManager
     {
-        private IAsyncRepositoryT<CommodityItem> _repo;
+        private IAsyncRepository<CommodityItem> _repo;
         private Serilog.ILogger _logger;
         private SampleOnlineMallAssortmentApiApp _app;
         private WebLoggerManager _webLogMgr;
         private Mapper _mapper;
-        private IAsyncRepositoryT<Supplier> _supplierRepo;
+        private IAsyncRepository<Supplier> _supplierRepo;
 
-        public CommodityItemFrontendManager(IAsyncRepositoryT<CommodityItem> repo, IAsyncRepositoryT<Supplier> supplierRepo,  Serilog.ILogger logger, SampleOnlineMallAssortmentApiApp app, Mapper mapper, WebLoggerManager webLogMgr)
+        public CommodityItemFrontendManager(IAsyncRepository<CommodityItem> repo, IAsyncRepository<Supplier> supplierRepo,  Serilog.ILogger logger, SampleOnlineMallAssortmentApiApp app, Mapper mapper, WebLoggerManager webLogMgr)
         {
             _repo = repo;
             _logger = logger;
@@ -37,44 +39,34 @@ namespace SampleOnlineMall.Core.Managers
 
         public async Task<IEnumerable<CommodityItemFrontend>> GetAll()
         {
-            var items = (await _repo.GetAllAsync()).Select(x => _mapper.CommodityItemFrontendFromCommodityItem(x)).ToList() ;
+            var items = (await _repo.GetAllAsync()).Select(x => _mapper.CommodityItemFrontendFromCommodityItem(x)).ToList();
             foreach (var item in items)
             {
                 var x = GetPictureInfoListForItem(item);
                 item.Pictures = x;
             }
-            
-            _webLogMgr.Log($"{items[0].Pictures.Count()}");
+           // _webLogMgr.Log($"{items[0].Pictures.Count()}");
             return items;
         }
 
-        public async Task<IEnumerable<CommodityItemFrontend>> GetPage(int pageNo)
+        public async Task<RepositoryResponce<CommodityItemFrontend>> GetAllByRequest(RepositoryRequestTextSearch repositoryRequest)
         {
-            var items = (await _repo.GetPageAsync(pageNo, 9)).Select(x => _mapper.CommodityItemFrontendFromCommodityItem(x)).ToList();
-            foreach (var item in items)
+            var sourceResponce = await _repo.GetAllByRequestAsync(repositoryRequest);
+
+            //var str = JsonConvert.SerializeObject(sourceResponce);
+            //_webLogMgr.Log($"Manager: responce is {str}");
+
+            var targetResponce = _mapper.ResponceFrontFromResponceCommItem(sourceResponce);
+
+            foreach (var x in targetResponce.Items)
             {
-                var x = GetPictureInfoListForItem(item);
-                item.Pictures = x;
+                x.Pictures = GetPictureInfoListForItem(x);
             }
-
-            _webLogMgr.Log($"{items[0].Pictures.Count()}");
-            return items;
-        }
-
-        private List<PictureInfo> GetPictureInfoListForItem(CommodityItemFrontend item)
-        {
-            var picLst = new List<PictureInfo>();
             
-            for (int i = 1;i<=3;i++)
-            {
-                var pic = new PictureInfo();
-                pic.BigPictureFullPath = $"{_app.BaseUrl}/CommodityItemImages/{item.Id}/{i}.jpg";
-                pic.MediumPictureFullPath = $"{_app.BaseUrl}/CommodityItemImages/{item.Id}/{i}m.jpg";
-                pic.SmallPictureFullPath = $"{_app.BaseUrl}/CommodityItemImages/{item.Id}/{i}s.jpg";
-                picLst.Add(pic);
-            }
-            return picLst;
+            return targetResponce;
         }
+
+
 
         public async Task<int> Count()
         {
@@ -94,6 +86,19 @@ namespace SampleOnlineMall.Core.Managers
             var rezFront = rez.Select(x => _mapper.CommodityItemFrontendFromCommodityItem(x)).ToList();
             return rezFront;
         }
+        private List<PictureInfo> GetPictureInfoListForItem(CommodityItemFrontend item)
+        {
+            var picLst = new List<PictureInfo>();
 
+            for (int i = 1; i <= 3; i++)
+            {
+                var pic = new PictureInfo();
+                pic.BigPictureFullPath = $"{_app.BaseUrl}/CommodityItemImages/{item.Id}/{i}.jpg";
+                pic.MediumPictureFullPath = $"{_app.BaseUrl}/CommodityItemImages/{item.Id}/{i}m.jpg";
+                pic.SmallPictureFullPath = $"{_app.BaseUrl}/CommodityItemImages/{item.Id}/{i}s.jpg";
+                picLst.Add(pic);
+            }
+            return picLst;
+        }
     }
 }

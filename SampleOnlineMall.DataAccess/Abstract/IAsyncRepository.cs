@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using SampleOnlineMall.DataAccess.Models;
 using SampleOnlineMall.Service;
 
 namespace SampleOnlineMall.DataAccess.Abstract
@@ -13,9 +14,9 @@ namespace SampleOnlineMall.DataAccess.Abstract
         //GetAll
         public Task<IEnumerable<T>> GetAllAsync();
         
-        public Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> filter);
+        public Task<RepositoryResponce<T>> GetAllByRequestAsync(RepositoryRequestFuncSearch<T> repositoryRequest);
 
-        public Task<IRepositoryResponce<T>> GetAllAsync(IRepositoryRequest<T> repositoryRequest);
+        public Task<RepositoryResponce<T>> GetAllByRequestAsync(RepositoryRequestTextSearch repositoryRequest);
 
         //Search
         public Task<IEnumerable<T>> SearchAsync(Expression<Func<T, bool>> filter); //legacy

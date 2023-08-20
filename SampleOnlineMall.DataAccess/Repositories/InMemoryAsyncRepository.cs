@@ -9,7 +9,7 @@ using SampleOnlineMall.Service;
 
 namespace SampleOnlineMall.DataAccess.DataAccess
 {
-    public class InMemoryAsyncRepository<T> : IAsyncRepositoryT<T> where T : BaseEntity, new ()
+    public class InMemoryAsyncRepository<T> : IAsyncRepository<T> where T : BaseEntity, new ()
     {
         
         private List<T> Data { get; set; } = new List<T>();
@@ -101,6 +101,16 @@ namespace SampleOnlineMall.DataAccess.DataAccess
         }
 
         public Task<IEnumerable<T>> GetPageAsync(Expression<Func<T, bool>> filter, int pageNo, int elementsPerPage)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<RepositoryResponce<T>> GetAllByRequestAsync(RepositoryRequestFuncSearch<T> repositoryRequest)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<RepositoryResponce<T>> GetAllByRequestAsync(RepositoryRequestTextSearch repositoryRequest)
         {
             throw new NotImplementedException();
         }

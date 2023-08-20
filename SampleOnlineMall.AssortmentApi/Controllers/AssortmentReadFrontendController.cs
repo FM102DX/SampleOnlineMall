@@ -7,6 +7,7 @@ using SampleOnlineMall.DataAccess.Models;
 using SampleOnlineMall.Service;
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 
 
@@ -28,24 +29,18 @@ namespace SampleOnlineMall
 
         [HttpGet]
         [Route("getall/")]
-        public async Task<IRepositoryResponce<CommodityItemFrontend>> GetAllItems()
+        public async Task<IEnumerable<CommodityItemFrontend>> GetAllItems()
         {
-            var responce = new IRepositoryResponce<CommodityItemFrontend>();
-            responce.TotlaCount = await _itemManager.Count();
-            responce.Items= await _itemManager.GetAll();
-            return responce;
+            return await _itemManager.GetAll();
         }
-        [HttpGet]
-        [Route("getpage/")]
-        public async Task<IRepositoryResponce<CommodityItemFrontend>> GetPage(ClientToApiPaginatedRequest request)
-        {
 
-            var responce = new RepositoryResponce<CommodityItemFrontend>();
-            responce.TotlaCount = await _itemManager.Count();
-            
-            responce.Items = await _itemManager.GetAll();
-            
-            return responce;
+        [HttpPost]
+        [Route("getallbyrequest/")]
+        public async Task<RepositoryResponce<CommodityItemFrontend>> GetAllByRequest(RepositoryRequestTextSearch request)
+        {
+            var str = JsonConvert.SerializeObject(request);
+            _webLoggerManager.Log($"Controller: got request {str}");
+            return await _itemManager.GetAllByRequest(request);
         }
 
         [HttpGet]

@@ -8,6 +8,7 @@ using SampleOnlineMall.DataAccess.Abstract;
 using SampleOnlineMall.DataAccess.Models;
 using SampleOnlineMall.Service;
 using System.Linq.Expressions;
+using Newtonsoft.Json;
 
 namespace SampleOnlineMall.DataAccess
 {
@@ -15,7 +16,6 @@ namespace SampleOnlineMall.DataAccess
     {
         private DbContext           _context;
         private Serilog.ILogger     _logger;
-
         public EfAsyncRepository(DbContext context, Serilog.ILogger logger)
         {
             _context = context;
@@ -37,78 +37,126 @@ namespace SampleOnlineMall.DataAccess
                 return Task.FromResult(en);
             }
         }
-
-        public Task<IRepositoryResponce<T>> GetAllAsync(IRepositoryRequest<T> request)
+        public Task<RepositoryResponce<T>> GetAllByRequestAsync(RepositoryRequestTextSearch request)
         {
             int totalCount = GetCountAsync().Result;
 
-            IRepositoryResponce<T> responce = new RepositoryResponce<T>()
+            RepositoryResponce<T> responce = new RepositoryResponce<T>()
             {
                 UsedPagination = request.UsePagination,
-                UsedSearch = request.SearchOptions.UseSearch
+                UsedSearch = request.UseSearch
             };
-
+            _logger.Debug("This is repo -- GetAllByRequestAsync");
             try
             {
-                if(request.UsePagination && request.SearchOptions.UseSearch)
+                if(request.UsePagination)
                 {
+                    _logger.Debug("Using pagination");
+                    if(request.Page <= 0)
+                    {
+                        request.Page = 1;
+                    }
+                    int offset = request.Page-1;
                     var rez = Task.FromResult((IEnumerable<T>)_context
                                     .Set<T>()
-                                    .Where(request.SearchOptions.Filter)
-                                    .Skip(request.ItemsPerPage * (request.Page - 1))
+                                    .Skip(request.ItemsPerPage * offset)
                                     .Take(request.ItemsPerPage).AsNoTracking());
                     responce.Page = request.Page;
                     responce.ItemsPerPage = request.ItemsPerPage;
                     responce.TotlaCount = totalCount;
                     responce.Items = rez.Result;
+                    _logger.Debug("End--Using pagination");
                 }
-                else if (!request.UsePagination && request.SearchOptions.UseSearch)
+                else
+                {
+                    _logger.Information("Not Using pagination");
+                    var rez = Task.FromResult((IEnumerable<T>)_context
+                                    .Set<T>()
+                                    .AsNoTracking());
+                    _logger.Debug("End--Not Using pagination");
+                    
+                    responce.Items = rez.Result;
+                }
+                responce.Result = CommonOperationResult.SayOk();
+                _logger.Debug($"Result is {JsonConvert.SerializeObject(responce)}");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Repository GetAllByRequestAsync error={ex.Message} innerex={ex.InnerException}");
+                responce.Result = CommonOperationResult.SayFail();
+                responce.Items = new List<T>();
+
+            }
+            return Task.FromResult(responce);
+        }
+
+        public Task<RepositoryResponce<T>> GetAllByRequestAsync(RepositoryRequestFuncSearch<T> request)
+        {
+            int totalCount = GetCountAsync().Result;
+
+            RepositoryResponce<T> responce = new RepositoryResponce<T>()
+            {
+                UsedPagination = request.UsePagination,
+                UsedSearch = request.UseSearch
+            };
+            if (request.Page <= 0)
+            {
+                request.Page = 1;
+            }
+            int offset = request.Page - 1;
+            try
+            {
+                if (request.UsePagination && request.UseSearch)
                 {
                     var rez = Task.FromResult((IEnumerable<T>)_context
                                     .Set<T>()
-                                    .Where(request.SearchOptions.Filter)
+                                    .Where(request.SearchFunc)
+                                    .AsQueryable<T>()
+                                    .Skip(request.ItemsPerPage * offset)
+                                    .Take(request.ItemsPerPage)
+                                    .AsNoTracking());
+
+                    responce.Page = request.Page;
+                    responce.ItemsPerPage = request.ItemsPerPage;
+                    responce.TotlaCount = totalCount;
+                    responce.Items = rez.Result;
+                }
+                else if (!request.UsePagination && request.UseSearch)
+                {
+                    var rez = Task.FromResult((IEnumerable<T>)_context
+                                    .Set<T>()
+                                    .Where(request.SearchFunc)
+                                    .AsQueryable<T>()
                                     .AsNoTracking());
                 }
-                else if (request.UsePagination && !request.SearchOptions.UseSearch)
+                else if (request.UsePagination && !request.UseSearch)
                 {
                     var rez = Task.FromResult((IEnumerable<T>)_context
                                         .Set<T>()
-                                        .Skip(request.ItemsPerPage * (request.Page-1))
+                                        .Skip(request.ItemsPerPage * offset)
                                         .Take(request.ItemsPerPage)
                                         .AsNoTracking());
                     responce.Page = request.Page;
                     responce.ItemsPerPage = request.ItemsPerPage;
                     responce.TotlaCount = totalCount;
-
+                    responce.Items = rez.Result;
                 }
-                else if (!request.UsePagination && !request.SearchOptions.UseSearch)
+                else if (!request.UsePagination && !request.UseSearch)
                 {
                     var rez = Task.FromResult((IEnumerable<T>)_context.Set<T>().AsNoTracking());
-                    
-                    responce = new RepositoryResponce<T>()
-                    {
-                        UsedPagination = request.UsePagination,
-                        UsedSearch = request.SearchOptions.UseSearch
-                    };
+                    responce.Items = rez.Result;
                 }
                 responce.Result = CommonOperationResult.SayOk();
             }
             catch (Exception ex)
             {
-                responce.Result = CommonOperationResult.SayFail();
+                responce.Result = CommonOperationResult.SayFail($"Error EfAsyncRepository GetAllByRequestAsync msg={ex.Message} innerex={ex.InnerException}");
                 responce.Items = new List<T>();
             }
             return Task.FromResult(responce);
         }
-        public Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> filter)
-        {
-            IRepositoryRequest<T> request = new RepositoryRequest<T>();
-            request.UsePagination = false;
-            request.SearchOptions.UseSearch = true;
-            request.SearchOptions.Filter = filter;
-            var getAll = GetAllAsync(request).Result;
-            return Task.FromResult(getAll.Items);
-        }
+
+        //others
         public Task<T> GetByIdOrNullAsync(Guid id)
         {
             return _context.Set<T>().SingleOrDefaultAsync(e => e.Id == id);

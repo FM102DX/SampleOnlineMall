@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SampleOnlineMall.FrontEnd.Blazor.Data;
 using SampleOnlineMall.Core;
+using SampleOnlineMall.DataAccess.Models;
 
 namespace SampleOnlineMall.FrontEnd.Blazor.Components.ShopItemCollection
 {
@@ -24,7 +25,7 @@ namespace SampleOnlineMall.FrontEnd.Blazor.Components.ShopItemCollection
         [Parameter]
         public string SearchText { get; set; }
 
-        public List<CommodityItemFrontendDisplayed> ItemsNo { get; set; } = new List<CommodityItemFrontendDisplayed>();
+        public List<CommodityItemFrontendDisplayed> ItemsDisplayed { get; set; } = new List<CommodityItemFrontendDisplayed>();
 
         public string FullName { get; set; }
 
@@ -43,9 +44,9 @@ namespace SampleOnlineMall.FrontEnd.Blazor.Components.ShopItemCollection
         {
             Logger.Information("Searching from comphub with text: " + SearchText);
 
-            ItemsNo = (await Manager.Search(SearchText)).ToList();
+            ItemsDisplayed = (await Manager.Search(SearchText)).ToList();
 
-            Count = ItemsNo.Count;
+            Count = ItemsDisplayed.Count;
 
             StateHasChanged();
         }
@@ -54,18 +55,29 @@ namespace SampleOnlineMall.FrontEnd.Blazor.Components.ShopItemCollection
         {
             if (UsageCase == ShopItemCollectionUsageCaseEnum.MainPageAppearamce)
             {
-                ItemsNo = (await Manager.GetAllAsync()).ToList();
+                RepositoryRequestTextSearch req = new RepositoryRequestTextSearch()
+                {
+                    UsePagination = false,
+                    UseSearch = false
+                };
+
+                var responce = await Manager.GetAllAsync(req);
+
+                ItemsDisplayed = responce.Items.ToList();
+
+                ItemsDisplayed.ForEach(x=> Logger.Information(x.AsJson()));
+
             }
             else if (UsageCase == ShopItemCollectionUsageCaseEnum.MainBarSearch)
             {
                 Logger.Information($"Doing search in ShopItemCollection with text = {SearchText}");
                 if (Manager == null) { Logger.Information("Repository is NULL"); } else Logger.Information("Repository is NOT NULL");
-                ItemsNo = (await Manager.Search(SearchText)).ToList();
+                ItemsDisplayed = (await Manager.Search(SearchText)).ToList();
             }
 
-            Logger.Information($"This Shopitemcollection object, IncomingItemsCount= {ItemsNo.Count}");
+            Logger.Information($"This Shopitemcollection object, IncomingItemsCount= {ItemsDisplayed.Count}");
 
-            Count = ItemsNo.Count;
+            Count = ItemsDisplayed.Count;
         }
 
         public enum ShopItemCollectionUsageCaseEnum

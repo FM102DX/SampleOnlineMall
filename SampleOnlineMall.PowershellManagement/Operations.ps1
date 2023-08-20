@@ -798,6 +798,7 @@ function RunTransactionAndWait ([string] $_transactionId)
         # this is made to start transaction in a separate window
         [string] $argList = "-file $scriptFileFullPath -transactionId $_transactionId -callType 'external-from-self' ";
         Start-process -FilePath $pwshPath -ArgumentList $argList -Wait;
+        "EOFunc"
         return;
 }
 
@@ -811,8 +812,9 @@ function DropThanCreateAssortDbAndFeelAssortment ([string] $_transactionId)
 function DeploySampleMallAssortWebApiWithAssortmentFill ([string] $_transactionId)
 {
     RunTransactionAndWait -_transactionId "201801";
+    "EOPoing"
     RunTransactionAndWait -_transactionId "203101";
-    RunTransactionAndWait -_transactionId "200102";
+    RunTransactionAndWait -_transactionId "200101";
     return;
 }
 

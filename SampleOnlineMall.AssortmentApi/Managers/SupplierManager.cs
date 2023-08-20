@@ -17,11 +17,11 @@ namespace SampleOnlineMall.Core.Managers
 {
     public class SupplierManager
     {
-        private IAsyncRepositoryT<Supplier> _repo;
+        private IAsyncRepository<Supplier> _repo;
         private Serilog.ILogger _logger;
         private SampleOnlineMallAssortmentApiApp _app;
         private WebLoggerManager _webLogger;
-        public SupplierManager(IAsyncRepositoryT<Supplier> repo, WebLoggerManager webLogger, Serilog.ILogger logger, SampleOnlineMallAssortmentApiApp app)
+        public SupplierManager(IAsyncRepository<Supplier> repo, WebLoggerManager webLogger, Serilog.ILogger logger, SampleOnlineMallAssortmentApiApp app)
         {
             _repo = repo;
             _logger = logger;

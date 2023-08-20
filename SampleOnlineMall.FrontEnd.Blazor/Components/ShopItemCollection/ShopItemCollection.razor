@@ -7,7 +7,7 @@
     @{
         int counter = 1;
         int step = 3;
-        int totalCount = @ItemsNo.Count;
+        int totalCount = ItemsDisplayed.Count;
         int stepCount= 0;
         //@UsageCase== ShopItemCollectionUsageCaseEnum.MainPageAppearamce
         // || @UsageCase== ShopItemCollectionUsageCaseEnum.MainBarSearch
@@ -26,8 +26,11 @@
     }
         
         <div class="goodsRowBegin skuUnitBase" />
-        @foreach(var sku in @ItemsNo)
+
+        @foreach(var sku in ItemsDisplayed)
         {
+           
+            
             @if (stepCount==step)
             {
                 <div class="goodsRowEnd skuUnitBase" /><div class="goodsRowBegin skuUnitBase" />
@@ -58,5 +61,7 @@
 
         }
 
-
+        <div class="PaginationControlSeparator"></div>
+        
+        <div class="PaginationControl"></div>
 </div>

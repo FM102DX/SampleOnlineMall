@@ -13,10 +13,10 @@ namespace SampleOnlineMall.Core.Managers
 {
     public class WebLoggerMessageManager
     {
-        private IAsyncRepositoryT<WebLoggerMessage> _repo;
+        private IAsyncRepository<WebLoggerMessage> _repo;
         private Serilog.ILogger _logger;
         private SampleOnlineMallWebLoggerApp _app;
-        public WebLoggerMessageManager(IAsyncRepositoryT<WebLoggerMessage> repo, Serilog.ILogger logger, SampleOnlineMallWebLoggerApp app)
+        public WebLoggerMessageManager(IAsyncRepository<WebLoggerMessage> repo, Serilog.ILogger logger, SampleOnlineMallWebLoggerApp app)
         {
             _repo = repo;
             _logger = logger;
@@ -73,7 +73,6 @@ namespace SampleOnlineMall.Core.Managers
         public async Task<CommonOperationResult> InsertFromWebApi (WebLoggerMessage item)
         {
             _logger.Information($"This is ItemManager. Received commodity item id={item.Id}");
-
             try
             {
                 //saving object

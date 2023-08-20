@@ -51,10 +51,10 @@ namespace SampleOnlineMall.FrontEnd.Blazor
                 .SetBaseAddress("https://mallassortapi01.t109.tech/")
                 .SetGetAllHostPath("getall/")
                 .SetGetByIdOrNullHostPath("GetByIdOrNull/")
-                .SetSearchHostPath("search/")
-                .SetGetPageHostPath("getpage/");
+                .SetGetAllByRequestHostPath("getallbyrequest/")
+                .SetSearchHostPath("search/");
 
-            builder.Services.AddScoped(typeof(IAsyncRepositoryT<CommodityItemFrontend>), (x) => new WebApiAsyncRepository<CommodityItemFrontend>(webRepoOptions));
+            builder.Services.AddScoped(typeof(IAsyncRepository<CommodityItemFrontend>), (x) => new WebApiAsyncRepository<CommodityItemFrontend>(webRepoOptions));
             builder.Services.AddScoped(typeof(SampleOnlineMallFrontEndBlazorApp), typeof(SampleOnlineMallFrontEndBlazorApp));
 
             FrontEndSettings frontEndSettings = new FrontEndSettings();

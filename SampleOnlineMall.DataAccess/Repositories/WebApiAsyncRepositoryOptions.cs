@@ -21,7 +21,7 @@ namespace SampleOnlineMall.DataAccess.DataAccess
         public Serilog.ILogger Logger { get; set; }
         public string CountHostPath { get; set; }
         public string GetAllHostPath { get; set; }
-        public string GetPageHostPath { get; set; }
+        public string GetAllByRequestHostPath { get; set; }
         public string InsertHostPath { get; set; }
         public string UpdateHostPath { get; set; }
         public string DeleteHostPath { get; set; }
@@ -43,9 +43,9 @@ namespace SampleOnlineMall.DataAccess.DataAccess
             GetAllHostPath = text;
             return this;
         }
-        public WebApiAsyncRepositoryOptions SetGetPageHostPath(string text)
+        public WebApiAsyncRepositoryOptions SetGetAllByRequestHostPath(string text)
         {
-            GetPageHostPath = text;
+            GetAllByRequestHostPath = text;
             return this;
         }
         public WebApiAsyncRepositoryOptions SetInsertHostPath(string text)
