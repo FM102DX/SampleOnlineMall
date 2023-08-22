@@ -63,7 +63,7 @@ namespace SampleOnlineMall.DataAccess
                                     .Take(request.ItemsPerPage).AsNoTracking());
                     responce.Page = request.Page;
                     responce.ItemsPerPage = request.ItemsPerPage;
-                    responce.TotlaCount = totalCount;
+                    responce.TotalCount = totalCount;
                     responce.Items = rez.Result;
                     _logger.Debug("End--Using pagination");
                 }
@@ -118,7 +118,7 @@ namespace SampleOnlineMall.DataAccess
 
                     responce.Page = request.Page;
                     responce.ItemsPerPage = request.ItemsPerPage;
-                    responce.TotlaCount = totalCount;
+                    responce.TotalCount = totalCount;
                     responce.Items = rez.Result;
                 }
                 else if (!request.UsePagination && request.UseSearch)
@@ -138,7 +138,7 @@ namespace SampleOnlineMall.DataAccess
                                         .AsNoTracking());
                     responce.Page = request.Page;
                     responce.ItemsPerPage = request.ItemsPerPage;
-                    responce.TotlaCount = totalCount;
+                    responce.TotalCount = totalCount;
                     responce.Items = rez.Result;
                 }
                 else if (!request.UsePagination && !request.UseSearch)

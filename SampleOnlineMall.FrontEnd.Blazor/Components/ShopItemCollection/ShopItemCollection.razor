@@ -1,6 +1,7 @@
 ﻿
 @using SampleOnlineMall.FrontEnd.Blazor.Components
 @using SampleOnlineMall.FrontEnd.Blazor.Components.ShopItemCollection
+@using SampleOnlineMall.FrontEnd.Blazor.Components.Paginator
 
 <div class="ShopItemCollection">
 
@@ -15,11 +16,11 @@
 
     @if (@UsageCase == ShopItemCollectionUsageCaseEnum.MainPageAppearamce)
     {
-        if (@Count == 0) { <span>No items here </span>}
+        if (ItemsTotalCount == 0) { <span>No items here </span>}
     }
     else
     {
-        if (@Count == 0)
+        if (ItemsTotalCount == 0)
         {
             <span>No items found </span>
         }
@@ -38,13 +39,10 @@
                    </a>
                 </div>
             </div>
-
             counter++;
-
             stepCount++;
-
         }
 
         <div class="PaginationControlSeparator"></div>
-
+        <Paginator></Paginator>
 </div>

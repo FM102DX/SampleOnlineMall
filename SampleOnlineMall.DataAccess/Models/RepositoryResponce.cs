@@ -12,7 +12,7 @@ namespace SampleOnlineMall.DataAccess.Models
     {
         public bool UsedPagination { get; set; }
         public bool UsedSearch { get; set; }
-        public int TotlaCount { get; set; }
+        public int TotalCount { get; set; }
         public int Page { get; set; }
         public int ItemsPerPage { get; set; }
 

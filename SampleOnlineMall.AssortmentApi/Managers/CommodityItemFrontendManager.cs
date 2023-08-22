@@ -62,10 +62,11 @@ namespace SampleOnlineMall.Core.Managers
             {
                 x.Pictures = GetPictureInfoListForItem(x);
             }
-            
+
+            targetResponce.TotalCount = await _repo.GetCountAsync();
+
             return targetResponce;
         }
-
 
 
         public async Task<int> Count()

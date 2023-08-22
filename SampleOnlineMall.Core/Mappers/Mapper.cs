@@ -58,6 +58,7 @@ namespace SampleOnlineMall.Core.Mappers
             targetResp.ItemsPerPage = sourceResp.ItemsPerPage;
             targetResp.UsedSearch = sourceResp.UsedSearch;
             targetResp.Page = sourceResp.Page;
+            targetResp.TotalCount = sourceResp.TotalCount;
             targetResp.Result = new Service.CommonOperationResult();
             targetResp.Result.Success = sourceResp.Result.Success;
             targetResp.Result.Message = sourceResp.Result.Message;
@@ -76,6 +77,7 @@ namespace SampleOnlineMall.Core.Mappers
             targetResp.ItemsPerPage = sourceResp.ItemsPerPage;
             targetResp.UsedSearch = sourceResp.UsedSearch;
             targetResp.Page = sourceResp.Page;
+            targetResp.TotalCount = sourceResp.TotalCount;
             targetResp.Result = new Service.CommonOperationResult();
             targetResp.Result.Success = sourceResp.Result.Success;
             targetResp.Result.Message = sourceResp.Result.Message;

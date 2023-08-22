@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using SampleOnlineMall.FrontEnd.Blazor.Data;
 using SampleOnlineMall.Core;
 using SampleOnlineMall.DataAccess.Models;
+using Newtonsoft.Json;
+using SampleOnlineMall.FrontEnd.Blazor.Components.Paginator;
 
 namespace SampleOnlineMall.FrontEnd.Blazor.Components.ShopItemCollection
 {
@@ -19,8 +21,16 @@ namespace SampleOnlineMall.FrontEnd.Blazor.Components.ShopItemCollection
         [Inject]
         ComponentHub CompHub { get; set; }
 
+
+
         [Parameter]
         public ShopItemCollectionUsageCaseEnum UsageCase { get; set; }
+
+        [Parameter]
+        public int Page { get; set; }
+
+        [Parameter]
+        public int ItemsPerPage { get; set; } = 4;
 
         [Parameter]
         public string SearchText { get; set; }
@@ -29,7 +39,10 @@ namespace SampleOnlineMall.FrontEnd.Blazor.Components.ShopItemCollection
 
         public string FullName { get; set; }
 
-        public int Count { get; set; }
+        public int ItemsTotalCount { get; set; }
+        public int PagesCount { get; set; }
+
+        public PaginatorPositionTypeEnum CurrentPageType { get; set; }
 
         protected override void OnInitialized()
         {
@@ -37,14 +50,23 @@ namespace SampleOnlineMall.FrontEnd.Blazor.Components.ShopItemCollection
             CompHub.PaginatorSelectionChanged += CompHub_PaginatorSelectionChanged;
         }
 
-        private void CompHub_PaginatorSelectionChanged(int selectedPage)
+        protected override async Task OnParametersSetAsync()
         {
-            
+            Logger.Information($"OnParametersSetAsync");
+            await DoPageLoadWithPagination(Page);
+            CompHub.SetPaginatonState(Page, ItemsTotalCount, ItemsPerPage);
+        }
+
+        private async void CompHub_PaginatorSelectionChanged(int selectedPage)
+        {
+            //await DoPageLoadWithPagination(selectedPage);
         }
 
         protected override async Task OnInitializedAsync()
         {
-             await DoPageLoad();
+            Logger.Information($"OnInitializedAsync");
+            //await DoPageLoadWithPagination(Page);
+            //CompHub.SetPaginatonState(Page, ItemsTotalCount, ItemsPerPage);
         }
 
         private async void CompHub_DoingSearch(string SearchText)
@@ -53,15 +75,60 @@ namespace SampleOnlineMall.FrontEnd.Blazor.Components.ShopItemCollection
 
             ItemsDisplayed = (await Manager.Search(SearchText)).ToList();
 
-            Count = ItemsDisplayed.Count;
+            //ItemsTotalCount = ItemsDisplayed.Count;
 
             StateHasChanged();
         }
 
-        protected async Task DoPageLoad()
+        protected async Task DoPageLoadWithPagination(int pageNo = 1)
         {
             if (UsageCase == ShopItemCollectionUsageCaseEnum.MainPageAppearamce)
             {
+                RepositoryRequestTextSearch req = new RepositoryRequestTextSearch()
+                {
+                    UsePagination = true,
+                    ItemsPerPage = ItemsPerPage,
+                    UseSearch = false,
+                    Page = pageNo
+                };
+
+                var responce = await Manager.GetAllAsync(req);
+
+                Logger.Information($"Go");
+
+                Logger.Information($"{JsonConvert.SerializeObject(responce)}");
+
+                ItemsTotalCount = responce.TotalCount;
+
+                ItemsDisplayed = responce.Items.ToList();
+
+                StateHasChanged();
+            }
+            else if (UsageCase == ShopItemCollectionUsageCaseEnum.MainBarSearch)
+            {
+
+                RepositoryRequestTextSearch req = new RepositoryRequestTextSearch()
+                {
+                    UsePagination = true,
+                    UseSearch = true,
+                    ItemsPerPage = 3,
+                    SearchText = SearchText,
+                    Page = pageNo
+                };
+
+                var responce = await Manager.GetAllAsync(req);
+
+                ItemsDisplayed = responce.Items.ToList();
+
+                StateHasChanged();
+            }
+        }
+
+        protected async Task DoPageLoadWithNoPagination()
+        {
+            if (UsageCase == ShopItemCollectionUsageCaseEnum.MainPageAppearamce)
+            {
+                
                 RepositoryRequestTextSearch req = new RepositoryRequestTextSearch()
                 {
                     UsePagination = false,
@@ -84,7 +151,7 @@ namespace SampleOnlineMall.FrontEnd.Blazor.Components.ShopItemCollection
 
             Logger.Information($"This Shopitemcollection object, IncomingItemsCount= {ItemsDisplayed.Count}");
 
-            Count = ItemsDisplayed.Count;
+            ItemsTotalCount = ItemsDisplayed.Count;
         }
 
         public enum ShopItemCollectionUsageCaseEnum

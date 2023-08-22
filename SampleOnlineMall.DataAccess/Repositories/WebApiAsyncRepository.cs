@@ -273,14 +273,10 @@ namespace SampleOnlineMall.DataAccess.DataAccess
             
             try
             {
-                _logger.Information($"{httpClient.BaseAddress}");
                 var response = await httpClient.SendAsync(httpRequest);
                 var json = await response.Content.ReadAsStringAsync();
-
                 repositoryResponce = (RepositoryResponce<T>)JsonConvert.DeserializeObject<RepositoryResponce<T>>(json);
-
-                _logger.Information($"response.StatusCode={response.StatusCode} json={json}");
-
+                _logger.Debug($"[WebApiRepository.GetAllByRequestAsync]: response.StatusCode={response.StatusCode} json={json}");
                 repositoryResponce.Result = CommonOperationResult.SayOk();
             }
             catch (Exception ex)

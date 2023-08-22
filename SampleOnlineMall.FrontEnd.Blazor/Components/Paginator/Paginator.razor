@@ -1,6 +1,18 @@
 ﻿@using SampleOnlineMall.FrontEnd.Blazor.Components
+@using SampleOnlineMall.FrontEnd.Blazor.Components.Paginator
 
         
 <div class="PaginationControlContainer">
-            <div class="PaginationControl"> 1 __ 2 __ 3 __ ... __ 10</div>
-        </div>
+            <div class="paginator-control">
+                <Div class="paginator-control-item">First</Div>
+                <Div class="paginator-control-item">Prev</Div>
+
+                @for (int i = 1; i <= @PagesCount; i++)
+                {
+                    <a href="/@i"><Div class="paginator-control-item @SelectedClass(@i)"> @i </Div></a>
+                }
+
+                <Div class="paginator-control-item">Next</Div>
+                <Div class="paginator-control-item">Last</Div>
+            </div>
+</div>
