@@ -120,7 +120,6 @@ namespace SampleOnlineMall.DataAccess
                     responce.ItemsPerPage = request.ItemsPerPage;
                     responce.Items = rez.Result;
                     responce.TotalCount = responce.Items.ToList().Count;
-                    
                 }
                 else if (!request.UsePagination && request.UseSearch)
                 {
@@ -131,6 +130,7 @@ namespace SampleOnlineMall.DataAccess
                                     .AsNoTracking());
                     responce.Items = rez.Result;
                     responce.TotalCount = responce.Items.ToList().Count;
+
                 }
                 else if (request.UsePagination && !request.UseSearch)
                 {
@@ -150,6 +150,7 @@ namespace SampleOnlineMall.DataAccess
                     responce.Items = rez.Result;
                 }
                 responce.Result = CommonOperationResult.SayOk();
+                _logger.Debug($"[EfAsyncRepositoryT] request.UsePagination={request.UsePagination} && request.UseSearch={request.UseSearch} responce={JsonConvert.SerializeObject(responce)}");
             }
             catch (Exception ex)
             {

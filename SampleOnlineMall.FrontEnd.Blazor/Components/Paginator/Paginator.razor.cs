@@ -98,7 +98,7 @@ namespace SampleOnlineMall.FrontEnd.Blazor.Components.Paginator
             if (PagesCount == 0) PagesCount = 1;
             if (SelectedPage == 0) SelectedPage = 1;
             UsageCase = usageCase;
-            Status = $"[Paginator] selectedPage={SelectedPage},totalCount={TotalCount}, itemsPerPage={ItemsPerPage} PagesCount={PagesCount} NextNumber={NextNumber} PrevNumber={PrevNumber}";
+            Status = $"[Paginator] selectedPage={SelectedPage},totalCount={TotalCount}, itemsPerPage={ItemsPerPage} PagesCount={PagesCount} NextNumber={NextNumber} PrevNumber={PrevNumber} ";
             StateHasChanged();
         }
     }
