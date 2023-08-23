@@ -28,11 +28,11 @@ namespace SampleOnlineMall.FrontEnd.Blazor.Pages
 
         protected override async Task OnInitializedAsync()
         {
-            Logger.Information($"index page opened with page={Page}");
+            
         }
         protected override void OnInitialized()
         {
-            Logger.Information($"VOID index page opened with page={Page}");
+            
         }
     }
 }

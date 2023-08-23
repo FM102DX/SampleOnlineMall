@@ -56,6 +56,7 @@ namespace SampleOnlineMall.Core.Mappers
         {
             var targetResp = new RepositoryResponce<CommodityItemFrontend>();
             targetResp.ItemsPerPage = sourceResp.ItemsPerPage;
+            targetResp.UsedPagination = sourceResp.UsedPagination;
             targetResp.UsedSearch = sourceResp.UsedSearch;
             targetResp.Page = sourceResp.Page;
             targetResp.TotalCount = sourceResp.TotalCount;
@@ -76,6 +77,7 @@ namespace SampleOnlineMall.Core.Mappers
             var targetResp = new RepositoryResponce<CommodityItemFrontendDisplayed>();
             targetResp.ItemsPerPage = sourceResp.ItemsPerPage;
             targetResp.UsedSearch = sourceResp.UsedSearch;
+            targetResp.UsedPagination = sourceResp.UsedPagination;
             targetResp.Page = sourceResp.Page;
             targetResp.TotalCount = sourceResp.TotalCount;
             targetResp.Result = new Service.CommonOperationResult();

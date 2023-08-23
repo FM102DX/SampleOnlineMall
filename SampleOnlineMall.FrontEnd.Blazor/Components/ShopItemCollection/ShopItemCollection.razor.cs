@@ -21,8 +21,6 @@ namespace SampleOnlineMall.FrontEnd.Blazor.Components.ShopItemCollection
         [Inject]
         ComponentHub CompHub { get; set; }
 
-
-
         [Parameter]
         public ShopItemCollectionUsageCaseEnum UsageCase { get; set; }
 
@@ -30,7 +28,7 @@ namespace SampleOnlineMall.FrontEnd.Blazor.Components.ShopItemCollection
         public int Page { get; set; }
 
         [Parameter]
-        public int ItemsPerPage { get; set; } = 4;
+        public int ItemsPerPage { get; set; }
 
         [Parameter]
         public string SearchText { get; set; }
@@ -40,21 +38,22 @@ namespace SampleOnlineMall.FrontEnd.Blazor.Components.ShopItemCollection
         public string FullName { get; set; }
 
         public int ItemsTotalCount { get; set; }
+
         public int PagesCount { get; set; }
 
-        public PaginatorPositionTypeEnum CurrentPageType { get; set; }
+        public PaginatorUsageCaseEnum CurrentPageType { get; set; }
 
         protected override void OnInitialized()
         {
             CompHub.DoingSearch += CompHub_DoingSearch;
-            CompHub.PaginatorSelectionChanged += CompHub_PaginatorSelectionChanged;
         }
 
         protected override async Task OnParametersSetAsync()
         {
             Logger.Information($"OnParametersSetAsync");
-            await DoPageLoadWithPagination(Page);
-            CompHub.SetPaginatonState(Page, ItemsTotalCount, ItemsPerPage);
+            
+            await DoPageLoadWithPagination(Page, SearchText);
+
         }
 
         private async void CompHub_PaginatorSelectionChanged(int selectedPage)
@@ -69,18 +68,13 @@ namespace SampleOnlineMall.FrontEnd.Blazor.Components.ShopItemCollection
             //CompHub.SetPaginatonState(Page, ItemsTotalCount, ItemsPerPage);
         }
 
-        private async void CompHub_DoingSearch(string SearchText)
+        private async void CompHub_DoingSearch(string searchText)
         {
-            Logger.Information("Searching from comphub with text: " + SearchText);
-
-            ItemsDisplayed = (await Manager.Search(SearchText)).ToList();
-
-            //ItemsTotalCount = ItemsDisplayed.Count;
-
-            StateHasChanged();
+            Logger.Information("Searching from comphub with text: " + searchText);
+            await DoPageLoadWithPagination(1, searchText);
         }
 
-        protected async Task DoPageLoadWithPagination(int pageNo = 1)
+        protected async Task DoPageLoadWithPagination(int pageNo = 1, string searchText="")
         {
             if (UsageCase == ShopItemCollectionUsageCaseEnum.MainPageAppearamce)
             {
@@ -103,6 +97,8 @@ namespace SampleOnlineMall.FrontEnd.Blazor.Components.ShopItemCollection
                 ItemsDisplayed = responce.Items.ToList();
 
                 StateHasChanged();
+
+                CompHub.SetPaginatonState(Page, ItemsTotalCount, ItemsPerPage, PaginatorUsageCaseEnum.Regular);
             }
             else if (UsageCase == ShopItemCollectionUsageCaseEnum.MainBarSearch)
             {
@@ -110,17 +106,25 @@ namespace SampleOnlineMall.FrontEnd.Blazor.Components.ShopItemCollection
                 RepositoryRequestTextSearch req = new RepositoryRequestTextSearch()
                 {
                     UsePagination = true,
+                    ItemsPerPage = ItemsPerPage,
                     UseSearch = true,
-                    ItemsPerPage = 3,
-                    SearchText = SearchText,
-                    Page = pageNo
+                    Page = pageNo,
+                    SearchText = searchText
                 };
 
                 var responce = await Manager.GetAllAsync(req);
 
+                Logger.Information($"Go");
+
+                Logger.Information($"{JsonConvert.SerializeObject(responce)}");
+
+                ItemsTotalCount = responce.TotalCount;
+
                 ItemsDisplayed = responce.Items.ToList();
 
                 StateHasChanged();
+
+                CompHub.SetPaginatonState(Page, ItemsTotalCount, ItemsPerPage, PaginatorUsageCaseEnum.Search);
             }
         }
 
@@ -160,9 +164,5 @@ namespace SampleOnlineMall.FrontEnd.Blazor.Components.ShopItemCollection
             MainBarSearch = 2
         }
 
-        public void DoLoggerAction()
-        {
-            Logger.Information("LoggerActionDone");
-        }
     }
 }

@@ -14,5 +14,15 @@ namespace SampleOnlineMall.DataAccess.Models
         public Func<T,bool> SearchFunc { get; set; }
         public bool UsePagination { get; set; }
         public bool UseSearch { get; set; }
+
+        public static RepositoryRequestFuncSearch<T> FromTextSearchRequest (RepositoryRequestTextSearch sourceReqest)
+        {
+            var targetReqest = new RepositoryRequestFuncSearch<T>();
+            targetReqest.ItemsPerPage = sourceReqest.ItemsPerPage;
+            targetReqest.UseSearch = sourceReqest.UseSearch;
+            targetReqest.UsePagination = sourceReqest.UsePagination;
+            targetReqest.Page = sourceReqest.Page;
+            return targetReqest;
+        }
     }
 }

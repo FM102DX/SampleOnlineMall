@@ -51,10 +51,23 @@ namespace SampleOnlineMall.Core.Managers
 
         public async Task<RepositoryResponce<CommodityItemFrontend>> GetAllByRequest(RepositoryRequestTextSearch repositoryRequest)
         {
-            var sourceResponce = await _repo.GetAllByRequestAsync(repositoryRequest);
-
-            //var str = JsonConvert.SerializeObject(sourceResponce);
-            //_webLogMgr.Log($"Manager: responce is {str}");
+            RepositoryResponce<CommodityItem> sourceResponce = null;
+            var searchText = repositoryRequest.SearchText?.ToLower();
+            if (repositoryRequest.UseSearch)
+            {
+                _webLogMgr.Log($"[CommodityItemFrontendManager]: used search");
+                var searchReq = RepositoryRequestFuncSearch<CommodityItem>.FromTextSearchRequest(repositoryRequest);
+                searchReq.SearchFunc = x => x.Name.ToLower().Contains(searchText) || x.Description.ToLower().Contains(searchText);
+                sourceResponce = await _repo.GetAllByRequestAsync(searchReq);
+            }
+            else
+            {
+                _webLogMgr.Log($"[CommodityItemFrontendManager]: not using search");
+                sourceResponce = await _repo.GetAllByRequestAsync(repositoryRequest);
+            }
+            
+            var str = JsonConvert.SerializeObject(sourceResponce);
+            _webLogMgr.Log($"[CommodityItemFrontendManager]: responce is {str}");
 
             var targetResponce = _mapper.ResponceFrontFromResponceCommItem(sourceResponce);
 

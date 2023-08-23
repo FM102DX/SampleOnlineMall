@@ -90,9 +90,9 @@ namespace SampleOnlineMall.DataAccess
             return Task.FromResult(responce);
         }
 
-        public Task<RepositoryResponce<T>> GetAllByRequestAsync(RepositoryRequestFuncSearch<T> request)
+        public async Task<RepositoryResponce<T>> GetAllByRequestAsync(RepositoryRequestFuncSearch<T> request)
         {
-            int totalCount = GetCountAsync().Result;
+            
 
             RepositoryResponce<T> responce = new RepositoryResponce<T>()
             {
@@ -118,8 +118,9 @@ namespace SampleOnlineMall.DataAccess
 
                     responce.Page = request.Page;
                     responce.ItemsPerPage = request.ItemsPerPage;
-                    responce.TotalCount = totalCount;
                     responce.Items = rez.Result;
+                    responce.TotalCount = responce.Items.ToList().Count;
+                    
                 }
                 else if (!request.UsePagination && request.UseSearch)
                 {
@@ -128,6 +129,8 @@ namespace SampleOnlineMall.DataAccess
                                     .Where(request.SearchFunc)
                                     .AsQueryable<T>()
                                     .AsNoTracking());
+                    responce.Items = rez.Result;
+                    responce.TotalCount = responce.Items.ToList().Count;
                 }
                 else if (request.UsePagination && !request.UseSearch)
                 {
@@ -138,7 +141,7 @@ namespace SampleOnlineMall.DataAccess
                                         .AsNoTracking());
                     responce.Page = request.Page;
                     responce.ItemsPerPage = request.ItemsPerPage;
-                    responce.TotalCount = totalCount;
+                    responce.TotalCount = await GetCountAsync();
                     responce.Items = rez.Result;
                 }
                 else if (!request.UsePagination && !request.UseSearch)
@@ -153,7 +156,7 @@ namespace SampleOnlineMall.DataAccess
                 responce.Result = CommonOperationResult.SayFail($"Error EfAsyncRepository GetAllByRequestAsync msg={ex.Message} innerex={ex.InnerException}");
                 responce.Items = new List<T>();
             }
-            return Task.FromResult(responce);
+            return responce;
         }
 
         //others

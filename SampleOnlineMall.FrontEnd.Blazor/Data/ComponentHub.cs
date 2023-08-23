@@ -27,25 +27,14 @@ namespace SampleOnlineMall.FrontEnd.Blazor.Data
 
 
 
-        // PaginatorSelectionChanged
-        public delegate void PaginatorSelectionChangedHandler(int selectedPage);
-        
-        public event PaginatorSelectionChangedHandler PaginatorSelectionChanged;
-        
-        public void ChangePaginatorSelection(int i)
-        {
-            PaginatorSelectionChanged(i);
-        }
-
-
         // PaginatorStateSet
-        public delegate void SetPaginatorStateHandler(int selectedPage, int count, int itemsPerPage);
+        public delegate void SetPaginatorStateHandler(int selectedPage, int count, int itemsPerPage, PaginatorUsageCaseEnum usageCase);
 
         public event SetPaginatorStateHandler PaginatorStateSet;
 
-        public void SetPaginatonState(int selectedPage, int count, int itemsPerPage)
+        public void SetPaginatonState(int selectedPage, int count, int itemsPerPage, PaginatorUsageCaseEnum usageCase)
         {
-            PaginatorStateSet (selectedPage,count, itemsPerPage);
+            PaginatorStateSet (selectedPage,count, itemsPerPage, usageCase);
         }
     }
 }

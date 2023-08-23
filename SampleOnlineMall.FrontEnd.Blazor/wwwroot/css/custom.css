@@ -329,7 +329,6 @@ div.shopitem-pricing-block {
 }
 
 
-
 div.SkuName {
     float: left;
     clear: both;
@@ -518,7 +517,8 @@ div.thumb-image-wrap_regular {
 
 /* ***********************  PAGINATOR  ************************* */
 div.paginator-control {
-    height: 10px;
+    margin-top: 40px;
+    margin-left: 130px;
 }
 
 div.paginator-control-item {
@@ -534,8 +534,20 @@ div.paginator-control-item {
 }
 
 div.paginator-control-item-selected {
-    background-color:red;
+    background-color: #3f92a4;
+    color:white;
 }
 div.paginator-control-item-regular {
-    background-color: azure;
+    background-color:white;
+    
 }
+
+div.paginator-control-item-clickable {
+
+}
+
+div.paginator-control-item-nonclickable {
+    background-color:#efefef;
+    color: darkgrey;
+}
+
