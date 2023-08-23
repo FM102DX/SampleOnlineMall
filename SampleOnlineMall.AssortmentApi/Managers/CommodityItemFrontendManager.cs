@@ -12,6 +12,8 @@ using Shim= SixLabors.ImageSharp.Image;
 using SixLabors.ImageSharp.Formats;
 using SampleOnlineMall.Core.Mappers;
 using SampleOnlineMall.Core.Models;
+using SampleOnlineMall.DataAccess.Models;
+using Newtonsoft.Json;
 
 namespace SampleOnlineMall.Core.Managers
 {
@@ -37,31 +39,48 @@ namespace SampleOnlineMall.Core.Managers
 
         public async Task<IEnumerable<CommodityItemFrontend>> GetAll()
         {
-            var items = (await _repo.GetAllAsync()).Select(x => _mapper.CommodityItemFrontendFromCommodityItem(x)).ToList() ;
+            var items = (await _repo.GetAllAsync()).Select(x => _mapper.CommodityItemFrontendFromCommodityItem(x)).ToList();
             foreach (var item in items)
             {
                 var x = GetPictureInfoListForItem(item);
                 item.Pictures = x;
             }
-            
-            _webLogMgr.Log($"{items[0].Pictures.Count()}");
+           // _webLogMgr.Log($"{items[0].Pictures.Count()}");
             return items;
         }
 
-        private List<PictureInfo> GetPictureInfoListForItem(CommodityItemFrontend item)
+        public async Task<RepositoryResponce<CommodityItemFrontend>> GetAllByRequest(RepositoryRequestTextSearch repositoryRequest)
         {
-            var picLst = new List<PictureInfo>();
-            
-            for (int i = 1;i<=3;i++)
+            RepositoryResponce<CommodityItem> sourceResponce = null;
+            var searchText = repositoryRequest.SearchText?.ToLower();
+            if (repositoryRequest.UseSearch)
             {
-                var pic = new PictureInfo();
-                pic.BigPictureFullPath = $"{_app.BaseUrl}/CommodityItemImages/{item.Id}/{i}.jpg";
-                pic.MediumPictureFullPath = $"{_app.BaseUrl}/CommodityItemImages/{item.Id}/{i}m.jpg";
-                pic.SmallPictureFullPath = $"{_app.BaseUrl}/CommodityItemImages/{item.Id}/{i}s.jpg";
-                picLst.Add(pic);
+                _webLogMgr.Log($"[CommodityItemFrontendManager]: used search");
+                var searchReq = RepositoryRequestFuncSearch<CommodityItem>.FromTextSearchRequest(repositoryRequest);
+                searchReq.SearchFunc = x => x.Name.ToLower().Contains(searchText) || x.Description.ToLower().Contains(searchText);
+                sourceResponce = await _repo.GetAllByRequestAsync(searchReq);
             }
-            return picLst;
+            else
+            {
+                _webLogMgr.Log($"[CommodityItemFrontendManager]: not using search");
+                sourceResponce = await _repo.GetAllByRequestAsync(repositoryRequest);
+            }
+            
+            var str = JsonConvert.SerializeObject(sourceResponce);
+            _webLogMgr.Log($"[CommodityItemFrontendManager]: responce is {str}");
+
+            var targetResponce = _mapper.ResponceFrontFromResponceCommItem(sourceResponce);
+
+            foreach (var x in targetResponce.Items)
+            {
+                x.Pictures = GetPictureInfoListForItem(x);
+            }
+
+            targetResponce.TotalCount = await _repo.GetCountAsync();
+
+            return targetResponce;
         }
+
 
         public async Task<int> Count()
         {
@@ -81,6 +100,19 @@ namespace SampleOnlineMall.Core.Managers
             var rezFront = rez.Select(x => _mapper.CommodityItemFrontendFromCommodityItem(x)).ToList();
             return rezFront;
         }
+        private List<PictureInfo> GetPictureInfoListForItem(CommodityItemFrontend item)
+        {
+            var picLst = new List<PictureInfo>();
 
+            for (int i = 1; i <= 3; i++)
+            {
+                var pic = new PictureInfo();
+                pic.BigPictureFullPath = $"{_app.BaseUrl}/CommodityItemImages/{item.Id}/{i}.jpg";
+                pic.MediumPictureFullPath = $"{_app.BaseUrl}/CommodityItemImages/{item.Id}/{i}m.jpg";
+                pic.SmallPictureFullPath = $"{_app.BaseUrl}/CommodityItemImages/{item.Id}/{i}s.jpg";
+                picLst.Add(pic);
+            }
+            return picLst;
+        }
     }
 }

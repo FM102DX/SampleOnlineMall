@@ -73,7 +73,6 @@ namespace SampleOnlineMall.Core.Managers
         public async Task<CommonOperationResult> InsertFromWebApi (WebLoggerMessage item)
         {
             _logger.Information($"This is ItemManager. Received commodity item id={item.Id}");
-
             try
             {
                 //saving object

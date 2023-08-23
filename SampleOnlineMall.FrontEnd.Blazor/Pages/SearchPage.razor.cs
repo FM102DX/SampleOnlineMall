@@ -13,7 +13,22 @@ namespace SampleOnlineMall.FrontEnd.Blazor.Pages
 
         [Parameter]
         public string SearchText { get; set; }
-
+        
+        [Parameter]
+        public int? Page { get; set; }
+        
+        public int PageToPass
+        {
+            get
+            {
+                int page = 0;
+                if (Page != null)
+                {
+                    page = (int)Page;
+                }
+                return page;
+            }
+        }
         public ShopItemCollectionUsageCaseEnum UsageCase { get; set; } = ShopItemCollectionUsageCaseEnum.MainBarSearch;
 
         protected override async Task OnInitializedAsync()

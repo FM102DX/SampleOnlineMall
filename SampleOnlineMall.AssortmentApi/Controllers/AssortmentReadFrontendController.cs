@@ -1,9 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SampleOnlineMall.Core;
 using SampleOnlineMall.Core.Managers;
+using SampleOnlineMall.Core.Models;
+using SampleOnlineMall.DataAccess.Abstract;
+using SampleOnlineMall.DataAccess.Models;
 using SampleOnlineMall.Service;
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 
 
@@ -28,6 +32,15 @@ namespace SampleOnlineMall
         public async Task<IEnumerable<CommodityItemFrontend>> GetAllItems()
         {
             return await _itemManager.GetAll();
+        }
+
+        [HttpPost]
+        [Route("getallbyrequest/")]
+        public async Task<RepositoryResponce<CommodityItemFrontend>> GetAllByRequest(RepositoryRequestTextSearch request)
+        {
+            var str = JsonConvert.SerializeObject(request);
+            _webLoggerManager.Log($"Controller: got request {str}");
+            return await _itemManager.GetAllByRequest(request);
         }
 
         [HttpGet]

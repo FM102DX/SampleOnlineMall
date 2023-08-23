@@ -3,6 +3,7 @@ using SampleOnlineMall.DataAccess.Models;
 using SampleOnlineMall.DataAccess.Abstract;
 using SampleOnlineMall.Core.Models;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace SampleOnlineMall.Core
 {
@@ -28,5 +29,10 @@ namespace SampleOnlineMall.Core
         public List<PictureInfo> Pictures { get; set; }
 
         public Supplier Supplier { get; set; }
+
+        public string AsJson ()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
     }
 }
