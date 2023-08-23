@@ -94,5 +94,25 @@ namespace SampleOnlineMall.DataAccess.DataAccess
         {
             throw new NotImplementedException();
         }
+
+        public Task<IEnumerable<T>> GetPageAsync(int pageNo, int elementsPerPage)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<T>> GetPageAsync(Expression<Func<T, bool>> filter, int pageNo, int elementsPerPage)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<RepositoryResponce<T>> GetAllByRequestAsync(RepositoryRequestFuncSearch<T> repositoryRequest)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<RepositoryResponce<T>> GetAllByRequestAsync(RepositoryRequestTextSearch repositoryRequest)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

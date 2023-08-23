@@ -54,8 +54,8 @@ namespace SampleOnlineMall.WebLogger
             builder.Services.AddCors(confg =>
                 confg.AddPolicy("AllowAll",
                      p => p.AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader()));
+                            .AllowAnyMethod()
+                            .AllowAnyHeader()));
 
             builder.Services.AddControllersWithViews();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -58,7 +58,7 @@ namespace SampleOnlineMall.FrontEnd.Blazor.Pages
                     ImgList.Add(new SelectableImage() { Id = i, FullSizePath = pictureinfo[i].MediumPictureFullPath, MidSizePath = pictureinfo[i].MediumPictureFullPath, ThumbPath = pictureinfo[i].SmallPictureFullPath });
                 }
 
-                Logger.Information($"ImgList.Count={ImgList.Count} pictureinfo.count={pictureinfo.Count}");
+                Logger.Information($"ImgList.ItemsTotalCount={ImgList.Count} pictureinfo.count={pictureinfo.Count}");
 
                 //SetCurrentImage();
 

@@ -13,6 +13,7 @@ using SampleOnlineMall.DataAccess.Abstract;
 using SampleOnlineMall.DataAccess.Models;
 using SampleOnlineMall.Service;
 using System.Linq.Expressions;
+using System.Net.Mime;
 
 namespace SampleOnlineMall.DataAccess.DataAccess
 {
@@ -23,10 +24,12 @@ namespace SampleOnlineMall.DataAccess.DataAccess
         private static readonly object _locker = new object();
 
         private HttpClient httpClient;
+
         private Serilog.ILogger _logger
         {
             get { return _options.Logger; }
         }
+
         private WebApiAsyncRepositoryOptions _options;
 
         public WebApiAsyncRepository(WebApiAsyncRepositoryOptions options)
@@ -36,6 +39,9 @@ namespace SampleOnlineMall.DataAccess.DataAccess
             httpClient.BaseAddress = new Uri(_options.BaseAddress);
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
+
+
+        //getall
 
         public async Task<int> GetCountAsync()
         {
@@ -92,14 +98,16 @@ namespace SampleOnlineMall.DataAccess.DataAccess
             return items;
         }
 
-
         public async Task<IEnumerable<T>> GetAllAsync()
         {
             IEnumerable<T> items = new List<T>();
+
             try
             {
                 var response = await httpClient.GetAsync($"{_options.GetAllHostPath}");
+
                 var json = await response.Content.ReadAsStringAsync();
+                
                 switch (response.StatusCode)
                 {
                     case System.Net.HttpStatusCode.OK:
@@ -115,6 +123,8 @@ namespace SampleOnlineMall.DataAccess.DataAccess
             }
             return items;
         }
+
+
         public async Task<T> GetByIdOrNullAsync(Guid id)
         {
             T item = null;
@@ -241,14 +251,41 @@ namespace SampleOnlineMall.DataAccess.DataAccess
             return await Task.FromResult(CommonOperationResult.SayOk());
         }
 
-        public Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> filter)
+        public Task<IEnumerable<T>> SearchAsync(Expression<Func<T, bool>> filter)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<T>> SearchAsync(Expression<Func<T, bool>> filter)
+        public async Task<RepositoryResponce<T>> GetAllByRequestAsync(RepositoryRequestFuncSearch<T> repositoryRequest)
         {
+           //web api repository not intended to make a func search because func cant be passed through api
             throw new NotImplementedException();
+        }
+
+        public async Task<RepositoryResponce<T>> GetAllByRequestAsync(RepositoryRequestTextSearch repositoryRequest)
+        {
+            var repositoryRequestJson = JsonConvert.SerializeObject(repositoryRequest);
+            RepositoryResponce<T> repositoryResponce = new RepositoryResponce<T>();
+            var httpRequest = new HttpRequestMessage();
+            httpRequest.Method = HttpMethod.Post;
+            httpRequest.RequestUri = new System.Uri($"{httpClient.BaseAddress}{_options.GetAllByRequestHostPath}");
+            httpRequest.Content = new StringContent(repositoryRequestJson, Encoding.UTF8, MediaTypeNames.Application.Json);
+            
+            try
+            {
+                var response = await httpClient.SendAsync(httpRequest);
+                var json = await response.Content.ReadAsStringAsync();
+                repositoryResponce = (RepositoryResponce<T>)JsonConvert.DeserializeObject<RepositoryResponce<T>>(json);
+                _logger.Debug($"[WebApiRepository.GetAllByRequestAsync]: response.StatusCode={response.StatusCode} json={json}");
+                repositoryResponce.Result = CommonOperationResult.SayOk();
+            }
+            catch (Exception ex)
+            {
+                var msg = $"Web api repo--GetAllByRequestAsync--err--message={ex.Message} innerEx={ex.InnerException}";
+                _logger.Error(msg);
+                repositoryResponce.Result = CommonOperationResult.SayOk(msg);
+            }
+            return repositoryResponce;
         }
     }
 }

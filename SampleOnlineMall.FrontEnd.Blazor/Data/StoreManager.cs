@@ -4,6 +4,7 @@ using SampleOnlineMall.Core;
 using SampleOnlineMall.Core.Mappers;
 using SampleOnlineMall.DataAccess.Abstract;
 using SampleOnlineMall.DataAccess.DataAccess;
+using SampleOnlineMall.DataAccess.Models;
 using System;
 
 
@@ -34,7 +35,11 @@ namespace SampleOnlineMall.FrontEnd.Blazor.Data
         {
             return (await _repo.GetAllAsync()).Select(x => _mapper.CommodityItemFrontendDisplayedFromTransport(x)).ToList();
         }
-        
+        public async Task<RepositoryResponce<CommodityItemFrontendDisplayed>> GetAllAsync(RepositoryRequestTextSearch repositoryRequest)
+        {
+            return _mapper.ResponceFrontDisplayedFromTransport(await _repo.GetAllByRequestAsync(repositoryRequest));
+        }
+
         public async Task<List<CommodityItemFrontendDisplayed>> Search(string searchText)
         {
             return (await _repo.SearchAsync(searchText)).Select(x=>_mapper.CommodityItemFrontendDisplayedFromTransport(x)).ToList();
