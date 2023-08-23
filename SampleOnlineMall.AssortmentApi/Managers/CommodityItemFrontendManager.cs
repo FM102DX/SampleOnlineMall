@@ -67,6 +67,7 @@ namespace SampleOnlineMall.Core.Managers
             }
             
             var str = JsonConvert.SerializeObject(sourceResponce);
+
             _webLogMgr.Log($"[CommodityItemFrontendManager]: responce is {str}");
 
             var targetResponce = _mapper.ResponceFrontFromResponceCommItem(sourceResponce);
@@ -75,8 +76,6 @@ namespace SampleOnlineMall.Core.Managers
             {
                 x.Pictures = GetPictureInfoListForItem(x);
             }
-
-            targetResponce.TotalCount = await _repo.GetCountAsync();
 
             return targetResponce;
         }
