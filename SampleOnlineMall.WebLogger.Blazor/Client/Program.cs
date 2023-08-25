@@ -14,6 +14,8 @@ using SampleOnlineMall.WebLogger.Blazor.Core;
 using SampleOnlineMall.DataAccess;
 using SampleOnlineMall.WebLogger.Blazor;
 using WebLogger.Blazor.Core.Managers;
+using MudBlazor.Services;
+
 
 namespace WebLogger.Blazor
 {
@@ -54,12 +56,12 @@ namespace WebLogger.Blazor
             builder.Services.AddScoped(typeof(SampleOnlineMallWebLoggerBlazorApp), typeof(SampleOnlineMallWebLoggerBlazorApp));
             builder.Services.AddScoped(typeof(ComponentHub), typeof(ComponentHub));
             builder.Services.AddScoped(typeof(WebLoggerSettingsManagerClient), typeof(WebLoggerSettingsManagerClient));
-
             builder.Services.AddScoped(typeof(IAsyncRepository<WebLoggerSettings>), (x) => new WebApiAsyncRepository<WebLoggerSettings>(new WebApiAsyncRepositoryOptions()
                                                                                     .SetLogger(_logger)
                                                                                     .SetBaseAddress("https://weblogger.t109.tech/")
                                                                                     .SetGetAllHostPath("settings/getall/")
                                                                                     .SetUpdateHostPath("settings/save/")));
+
 
             _logger.Information("Blazor P3");
 
